@@ -1,0 +1,728 @@
+/* Sivurunko ja valikko */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  padding: 28px 20px 48px;
+  flex: 1;
+}
+
+.main-content:focus {
+  outline: none;
+}
+
+.site-header {
+  background: #285e85;
+  border-bottom: 4px solid #d3a347;
+  color: white;
+}
+
+.header-content {
+  max-width: 1100px;
+  min-height: 68px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.site-header a {
+  color: white;
+  text-decoration: none;
+}
+
+.site-header :focus-visible {
+  outline-color: #ffe1a2;
+}
+
+.site-name {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.main-nav {
+  display: flex;
+  gap: 22px;
+}
+
+.main-nav a {
+  padding: 6px 0;
+  font-size: 15px;
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+
+.header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.language-buttons {
+  display: flex;
+  gap: 3px;
+}
+
+.language-buttons button {
+  padding: 6px 8px;
+  border: 1px solid #b4cbdc;
+  border-radius: 3px;
+  background: transparent;
+  color: white;
+  font-size: 12px;
+}
+
+.language-buttons button[aria-pressed='true'] {
+  background: white;
+  color: #285e85;
+}
+
+.header-actions .button {
+  border-color: #b4cbdc;
+  background: #356c95;
+}
+
+.header-actions .button:hover {
+  background: #1c4b6e;
+}
+
+.account-link {
+  min-width: 0;
+  font-size: 14px;
+}
+
+.account-link:hover {
+  text-decoration: underline;
+}
+
+.account-name {
+  display: block;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.site-footer {
+  width: min(1060px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 18px 0 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.site-footer > div {
+  display: flex;
+  gap: 18px;
+}
+
+/* Painikkeet ja lomakkeet */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 1px solid #255a87;
+  border-radius: 3px;
+  background: var(--accent);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.button:hover {
+  background: var(--accent-hover);
+}
+
+.button.secondary {
+  border-color: #9fadb9;
+  background: white;
+  color: #285e85;
+}
+
+.button.secondary:hover {
+  background: var(--soft-blue);
+}
+
+.button.small {
+  min-height: 34px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.text-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.panel {
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  margin-bottom: 18px;
+}
+
+.form-field label,
+.quick-search label {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+input,
+select {
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  padding: 8px 10px;
+  border: 1px solid #a9b4be;
+  border-radius: 3px;
+  background: white;
+  color: var(--text);
+  font-size: 14px;
+}
+
+input::placeholder {
+  color: #66717c;
+}
+
+input[readonly] {
+  background: #f0f2f4;
+  color: var(--muted);
+}
+
+.form-field small,
+.field-help {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.field-help {
+  margin: -8px 0 18px;
+}
+
+.password-input {
+  display: flex;
+  border: 1px solid #a9b4be;
+  border-radius: 3px;
+  background: white;
+}
+
+.password-input:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.password-input input {
+  height: 38px;
+  border: 0;
+}
+
+.password-input input:focus-visible {
+  outline: none;
+}
+
+.password-input button {
+  flex-shrink: 0;
+  max-width: 46%;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-size: 12px;
+}
+
+.form-error,
+.form-notice,
+.form-success {
+  padding: 12px 14px;
+  border: 1px solid;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+.form-error,
+.form-notice {
+  border-color: #d6a99b;
+  background: #fff1ed;
+  color: #8f3328;
+}
+
+.form-success {
+  border-color: #a5c3a2;
+  background: #edf6ec;
+  color: #2d602e;
+}
+
+.form-notice p {
+  margin-bottom: 6px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* Etusivun haku */
+.home-search {
+  padding: 20px;
+  border: 1px solid #b8cdde;
+  border-radius: 3px;
+  background: var(--soft-blue);
+}
+
+.home-search h1 {
+  margin-bottom: 16px;
+  font-size: 28px;
+}
+
+.quick-search {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  max-width: 680px;
+}
+
+.quick-search-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.quick-search label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.quick-search .button {
+  min-width: 80px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 28px 0 16px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+/* Elokuvien listaus */
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.movie-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: white;
+}
+
+.poster-link {
+  display: block;
+  position: relative;
+  background: #e4e8ed;
+}
+
+.poster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+}
+
+.missing-poster {
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.movie-rating {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 6px;
+  border: 1px solid #b99449;
+  border-radius: 2px;
+  background: #ffe1a2;
+  color: #4b390b;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.movie-rating > span {
+  color: #785b13;
+}
+
+.movie-info {
+  padding: 12px;
+}
+
+.movie-meta {
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.movie-meta > span {
+  margin: 0 3px;
+}
+
+.movie-info h3 {
+  margin-bottom: 6px;
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+.movie-info h3 a {
+  color: #254f75;
+  text-decoration: none;
+}
+
+.movie-info h3 a:hover {
+  text-decoration: underline;
+}
+
+.movie-genres {
+  min-height: 18px;
+  margin-bottom: 8px;
+  color: #406b3d;
+  font-size: 12px;
+}
+
+.movie-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.status-message {
+  margin: 24px 0;
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.status-message p {
+  max-width: 650px;
+  margin: 0 auto 16px;
+}
+
+.load-more {
+  margin-top: 28px;
+  text-align: center;
+}
+
+/* Hakusivu ja käyttäjäsivut */
+.page-heading {
+  margin-bottom: 22px;
+}
+
+.page-heading h1 {
+  margin-bottom: 8px;
+  font-size: 28px;
+}
+
+.page-heading p {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.search-form {
+  display: grid;
+  grid-template-columns: 1fr 1.7fr 1fr 1.1fr auto;
+  align-items: end;
+  gap: 12px;
+  padding: 18px;
+  background: var(--soft-blue);
+}
+
+.search-form .form-field {
+  margin: 0;
+}
+
+.auth-layout {
+  max-width: 440px;
+  margin: 28px auto;
+}
+
+.auth-panel {
+  padding: 24px;
+}
+
+.auth-panel h1 {
+  margin-bottom: 8px;
+  font-size: 26px;
+}
+
+.auth-panel > p {
+  margin-bottom: 22px;
+  font-size: 14px;
+}
+
+.auth-panel .auth-switch {
+  margin: 22px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.account-page {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.account-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px;
+  margin-bottom: 22px;
+  border-color: #dccba8;
+  background: #fff8e8;
+}
+
+.account-summary > div {
+  min-width: 0;
+}
+
+.account-summary h2 {
+  margin-bottom: 4px;
+  font-size: 22px;
+  overflow-wrap: anywhere;
+}
+
+.account-summary p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.account-summary > button {
+  flex-shrink: 0;
+}
+
+.account-forms {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: 20px;
+}
+
+.account-forms h2 {
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.small-page {
+  max-width: 680px;
+  margin: 24px auto;
+  padding: 24px;
+}
+
+.small-page h1 {
+  font-size: 28px;
+}
+
+.small-page > p {
+  color: var(--muted);
+}
+
+.attribution {
+  margin: 24px 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.attribution p {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Kapeammat näytöt */
+@media (max-width: 900px) {
+  .header-content {
+    gap: 20px;
+  }
+
+  .main-nav {
+    gap: 16px;
+  }
+
+  .movie-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .search-form {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .search-submit {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .header-content {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  .site-name {
+    font-size: 20px;
+  }
+
+  .header-actions {
+    gap: 10px;
+  }
+
+  .account-name {
+    max-width: 90px;
+  }
+
+  .main-nav {
+    order: 3;
+    width: 100%;
+    padding-top: 6px;
+    border-top: 1px solid #6086a3;
+    gap: 24px;
+  }
+
+  .main-nav a {
+    font-size: 14px;
+  }
+
+  .main-content {
+    padding: 20px 14px 36px;
+  }
+
+  .site-footer {
+    width: calc(100% - 28px);
+    font-size: 12px;
+  }
+
+  .site-footer > div {
+    gap: 12px;
+  }
+
+  .home-search {
+    padding: 16px;
+  }
+
+  .home-search h1,
+  .page-heading h1 {
+    font-size: 24px;
+  }
+
+  .quick-search input {
+    font-size: 13px;
+  }
+
+  .section-heading {
+    flex-direction: column;
+    align-items: start;
+    gap: 10px;
+  }
+
+  .section-heading h2 {
+    font-size: 21px;
+  }
+
+  .movie-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .movie-info {
+    padding: 10px;
+  }
+
+  .movie-info h3 {
+    font-size: 16px;
+  }
+
+  .movie-meta,
+  .movie-genres,
+  .movie-description {
+    font-size: 12px;
+  }
+
+  .search-form,
+  .account-forms {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-layout {
+    margin: 12px auto;
+  }
+
+  .auth-panel,
+  .account-forms .panel {
+    padding: 18px;
+  }
+
+  .account-summary {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .small-page {
+    margin: 12px auto;
+    padding: 20px;
+  }
+}

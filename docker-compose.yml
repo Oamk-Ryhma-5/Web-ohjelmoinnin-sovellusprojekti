@@ -1,0 +1,68 @@
+# Sama kolmen palvelun rakenne kuin OAMK:n docker_sample-pohjassa.
+# Luo ensin .env: Copy-Item .env.example .env
+# Käynnistä: docker compose up -d --build
+# Pysäytä: docker compose down
+
+services:
+  database:
+    image: postgres:18.6
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mydb}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root}
+    ports:
+      - "${DB_EXPOSED_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./api/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-mydb}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./api
+    env_file:
+      - .env
+    ports:
+      - "${BACKEND_EXPOSED_PORT:-3000}:${PORT:-3000}"
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "1000"
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${PORT:-3000}/api/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  frontend:
+    build: .
+    ports:
+      - "${FRONTEND_EXPOSED_PORT:-5173}:${FRONTEND_PORT:-5173}"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+      FRONTEND_PORT: ${FRONTEND_PORT:-5173}
+      VITE_API_URL: ${VITE_API_URL:-}
+      API_PROXY_TARGET: http://backend:${PORT:-3000}
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
