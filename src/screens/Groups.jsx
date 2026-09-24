@@ -7,7 +7,7 @@ export default function Groups() {
   return (
     <div className="container">
       <h1>{texts.groups || 'Ryhmät'}</h1>
-      <p>Täältä voit luoda ja selata elokuvaryhmiä.</p>
+      <p>Täällä voit luoda ja selata elokuvaryhmiä.</p>
     </div>
   );
 }
