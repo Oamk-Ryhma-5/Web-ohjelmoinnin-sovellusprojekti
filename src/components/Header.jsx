@@ -17,7 +17,9 @@ export default function Header() {
             {texts.theaters}
           </NavLink>
           <NavLink to="/haku">{texts.search}</NavLink>
+        <NavLink to="/groups">{texts.groups}</NavLink> 
         </nav>
+        
         <div className="header-actions">
           <div className="language-buttons" role="group" aria-label={texts.language}>
             <button
