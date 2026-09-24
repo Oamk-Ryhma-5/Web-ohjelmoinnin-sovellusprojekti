@@ -36,6 +36,22 @@ export default function Header() {
             >
               EN
             </button>
+            <button
+              lang="sv"
+              aria-label="Svenska"
+              aria-pressed={language === 'sv'}
+              onClick={() => setLanguage('sv')}
+            >
+              SV
+            </button>
+            <button
+              lang="tlh"
+              aria-label="tlhIngan Hol"
+              aria-pressed={language === 'tlh'}
+              onClick={() => setLanguage('tlh')}
+            >
+              TLH
+            </button>
           </div>
           {!loading &&
             (user ? (
