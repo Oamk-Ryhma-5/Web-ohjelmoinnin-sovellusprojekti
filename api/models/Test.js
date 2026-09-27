@@ -5,4 +5,8 @@ const getAllTests = async () => {
   return result
 }
 
+<<<<<<< HEAD
 export { getAllTests }
+=======
+export { getAllTests }
+>>>>>>> origin/yhdistetty-versio

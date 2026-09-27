@@ -8,7 +8,13 @@ export async function createTestDatabase() {
   async function acquire() {
     const previous = tail
     let release
+<<<<<<< HEAD
     tail = new Promise(resolve => { release = resolve })
+=======
+    tail = new Promise((resolve) => {
+      release = resolve
+    })
+>>>>>>> origin/yhdistetty-versio
     await previous
     return release
   }
@@ -19,9 +25,25 @@ export async function createTestDatabase() {
   return {
     async query(sql, params) {
       const release = await acquire()
+<<<<<<< HEAD
       try { return await query(sql, params) } finally { release() }
     },
     async connect() { return { query, release: await acquire() } },
     async end() { await tail; await db.close() },
+=======
+      try {
+        return await query(sql, params)
+      } finally {
+        release()
+      }
+    },
+    async connect() {
+      return { query, release: await acquire() }
+    },
+    async end() {
+      await tail
+      await db.close()
+    },
+>>>>>>> origin/yhdistetty-versio
   }
 }

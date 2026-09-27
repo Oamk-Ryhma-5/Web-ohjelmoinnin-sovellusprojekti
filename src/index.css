@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -20,10 +21,67 @@ a {
 }
 a:hover {
   color: #535bf2;
+=======
+/* Yhteiset värit ja selaimen perusasetukset. */
+:root {
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text);
+  background: var(--background);
+  color-scheme: light;
+  line-height: 1.5;
+  --background: #f3f5f7;
+  --surface: #ffffff;
+  --border: #cdd4db;
+  --text: #252b33;
+  --muted: #58636e;
+  --accent: #2d6da3;
+  --soft-blue: #e8f1f8;
+  --header: #285e85;
+  --input-border: #a9b4be;
+  --subtle: #f0f2f4;
+  --genre: #406b3d;
+  --error-background: #fff1ed;
+  --error-text: #8f3328;
+  --error-border: #d6a99b;
+  --success-background: #edf6ec;
+  --success-text: #2d602e;
+  --success-border: #a5c3a2;
+  --summary-background: #fff8e8;
+  --summary-border: #dccba8;
+}
+
+/* Tumma tila vaihtaa vain värit. Samat komponentit toimivat molemmissa tiloissa. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --background: #171c22;
+  --surface: #232b34;
+  --border: #46525e;
+  --text: #edf1f5;
+  --muted: #bac4ce;
+  --accent: #95c9f0;
+  --soft-blue: #253848;
+  --header: #1d3d56;
+  --input-border: #738291;
+  --subtle: #303a45;
+  --genre: #accf9b;
+  --error-background: #442b2a;
+  --error-text: #ffc0b6;
+  --error-border: #a56860;
+  --success-background: #243c2b;
+  --success-text: #b3deb7;
+  --success-border: #688d6b;
+  --summary-background: #393324;
+  --summary-border: #847345;
+}
+
+* {
+  box-sizing: border-box;
+>>>>>>> origin/yhdistetty-versio
 }
 
 body {
   margin: 0;
+<<<<<<< HEAD
   display: flex;
   place-items: center;
   min-width: 320px;
@@ -65,4 +123,79 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+=======
+  min-width: 320px;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.3;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: #c5dcf0;
+  color: #172f43;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: fixed;
+  top: -80px;
+  left: 16px;
+  z-index: 10;
+  padding: 10px 16px;
+  border: 1px solid var(--accent);
+  background: var(--surface);
+}
+
+.skip-link:focus {
+  top: 10px;
+>>>>>>> origin/yhdistetty-versio
 }

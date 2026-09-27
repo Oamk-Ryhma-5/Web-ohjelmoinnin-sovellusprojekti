@@ -5,4 +5,8 @@ const router = Router()
 
 router.get('/', getTests)
 
+<<<<<<< HEAD
 export default router
+=======
+export default router
+>>>>>>> origin/yhdistetty-versio

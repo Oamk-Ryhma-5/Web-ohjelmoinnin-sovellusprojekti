@@ -11,7 +11,13 @@ export async function migrate(pool) {
       name TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
     )`)
     for (const name of ['001_accounts.sql']) {
+<<<<<<< HEAD
       const { rows } = await client.query('SELECT name FROM leffahaku_migrations WHERE name = $1', [name])
+=======
+      const { rows } = await client.query('SELECT name FROM leffahaku_migrations WHERE name = $1', [
+        name,
+      ])
+>>>>>>> origin/yhdistetty-versio
       if (rows.length) continue
       await client.query(await readFile(new URL(`../migrations/${name}`, import.meta.url), 'utf8'))
       await client.query('INSERT INTO leffahaku_migrations (name) VALUES ($1)', [name])

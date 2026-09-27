@@ -5,6 +5,7 @@ const getTests = async (req, res, next) => {
     const result = await getAllTests()
     res.status(200).json(result.rows || [])
   } catch (error) {
+<<<<<<< HEAD
     next(error) 
   }
 }
@@ -12,3 +13,10 @@ const getTests = async (req, res, next) => {
 export {
   getTests
 }
+=======
+    next(error)
+  }
+}
+
+export { getTests }
+>>>>>>> origin/yhdistetty-versio
