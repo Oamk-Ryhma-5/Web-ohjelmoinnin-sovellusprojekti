@@ -3,6 +3,7 @@ export const translations = {
   fi: {
     theaters: 'Teattereissa',
     search: 'Haku',
+    groups: 'Ryhmät',
     signIn: 'Kirjaudu',
     signUp: 'Luo tili',
     signOut: 'Kirjaudu ulos',
@@ -119,6 +120,7 @@ export const translations = {
     search: 'Search',
     signIn: 'Sign in',
     signUp: 'Create account',
+    groups: 'Groups',
     signOut: 'Sign out',
     account: 'My account',
     navigation: 'Main navigation',

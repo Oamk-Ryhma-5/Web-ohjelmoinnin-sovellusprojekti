@@ -5,6 +5,7 @@ import App from './App.jsx'
 import Home from './screens/Home.jsx'
 import Search from './screens/Search.jsx'
 import Authentication from './screens/Authentication.jsx'
+import Groups from './screens/Groups.jsx'
 import Account from './screens/Account.jsx'
 import About from './screens/About.jsx'
 import NotFound from './screens/NotFound.jsx'
@@ -23,8 +24,9 @@ const router = createBrowserRouter([
       { path: 'haku', element: <Search /> },
       { path: 'kirjaudu', element: <Authentication key="login" mode="login" /> },
       { path: 'rekisteroidy', element: <Authentication key="register" mode="register" /> },
-      {
-        element: <ProtectedRoute />,
+    
+      { path: 'groups', element: <Groups />},    
+      {  element: <ProtectedRoute />,
         children: [{ path: 'omat-tiedot', element: <Account /> }],
       },
       { path: 'tietoa', element: <About /> },
