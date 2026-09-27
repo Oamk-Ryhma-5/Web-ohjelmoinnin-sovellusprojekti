@@ -7,8 +7,8 @@ import MovieList from '../components/MovieList.jsx';
 export default function Home() {
   const { texts, language } = useLanguage();
   const { user } = useUser();
-  const [query, setQuery] = useState('');
-  const navigate = useNavigate();
+  const [query, setQuery] = useState('');  //usestate huomioi käyttäjän kirjoittaman hakutekstin (query) täs käytetään useState-hookkia arvon tallennukseen.
+  const navigate = useNavigate(); //ohjelmallin en siirtyminen toiselle sivulle. navigate-funktio osaa välittää urlin mukana hakutermin että hakusivu osaa hakea oikeat elokuvat.
 
   function search(event) {
     event.preventDefault();

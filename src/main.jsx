@@ -24,17 +24,18 @@ import LanguageProvider from './context/LanguageProvider.jsx'
 import './index.css'
 
 // React Router ja ProtectedRoute samalla periaatteella kuin Todo-tehtävässä.
+// määritellään soveluksen reitit (react router) alla oleva rimpsu pitää kirjaa siitä mikä komponentti näytetäänmilläkin URl-ositteella.
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
     children: [
-      { index: true, element: <Home /> },
-      { path: 'haku', element: <Search /> },
+      { index: true, element: <Home /> }, //nyt teattereissa (etusivu)
+      { path: 'haku', element: <Search /> }, //Hakusivu
       { path: 'kirjaudu', element: <Authentication key="login" mode="login" /> },
       { path: 'rekisteroidy', element: <Authentication key="register" mode="register" /> },
     
-      { path: 'groups', element: <Groups />},    
+      { path: 'groups', element: <Groups />},   //ryhmäsivu 
       {  element: <ProtectedRoute />,
         children: [{ path: 'omat-tiedot', element: <Account /> }],
       },

@@ -3,8 +3,8 @@ import { api, errorMessage } from '../api.js'
 import { useLanguage } from '../context/useLanguage.js'
 import MovieCard from './MovieCard.jsx'
 
-// Home ja Search käyttävät samaa listaa. Eri haku tai kieli saa uuden key-arvon,
-// joten listan sivutus alkaa silloin alusta ilman vanhoja hakutuloksia.
+// komponentti ottaa vastaan dataa (propseina) kuten listan elokuvista.
+// karttaa jokaiselle elokuvalle oman kortin ruudulle.
 export default function MovieList({ url, type = 'movie' }) {
   const { texts, locale } = useLanguage()
   const [movies, setMovies] = useState([])
