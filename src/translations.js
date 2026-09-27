@@ -214,6 +214,7 @@ export const translations = {
   },
   sv: {
     theaters: 'På bio',
+    groups: 'Grupper',
     search: 'Sök',
     signIn: 'Logga in',
     signUp: 'Skapa konto',
@@ -322,6 +323,7 @@ export const translations = {
     search: 'nej',
     signIn: 'el',
     signUp: 'ghItlh',
+    groups: 'QeS',
     signOut: 'mej',
     account: 'De\'wI\'',
     navigation: 'mIqta\'',
