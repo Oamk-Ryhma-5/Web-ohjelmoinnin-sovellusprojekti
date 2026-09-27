@@ -34,10 +34,10 @@ export default function MovieDetails() {
         />
       )}
 
-      <div className="movie-details-info">
+      <div>
         <h1>{movie.title}</h1>
 
-        <p>
+        <p className="movie-meta">
           {movie.year} · {movie.genres.map((genre) => genre.name).join(' · ')}
         </p>
 
@@ -45,7 +45,9 @@ export default function MovieDetails() {
           <p>★ {movie.rating.toFixed(1)}</p>
         )}
 
-        <p>{movie.overview || 'Kuvausta ei ole saatavilla.'}</p>
+        <p className="movie-description">
+          {movie.overview || 'Kuvausta ei ole saatavilla.'}
+        </p>
       </div>
     </section>
   )

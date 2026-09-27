@@ -446,6 +446,23 @@ input[readonly] {
   line-height: 1.5;
 }
 
+/* Elokuvan tietosivu */
+
+.movie-details {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 32px;
+  align-items: start;
+  max-width: 800px;
+}
+
+.movie-details-poster {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: #e4e8ed;
+}
+
 .status-message {
   margin: 24px 0;
   padding: 24px 16px;
@@ -687,6 +704,15 @@ input[readonly] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
   }
+
+  .movie-details {
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.movie-details-poster {
+  max-width: 260px;
+}
 
   .movie-info {
     padding: 10px;
