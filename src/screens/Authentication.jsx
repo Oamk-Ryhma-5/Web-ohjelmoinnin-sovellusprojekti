@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useUser } from '../context/useUser.js'
 import { useLanguage } from '../context/useLanguage.js'
 import { errorMessage } from '../api.js'
@@ -9,6 +9,7 @@ export default function Authentication({ mode }) {
   const { user, loading, signIn, signUp } = useUser()
   const { texts } = useLanguage()
   const navigate = useNavigate()
+  const location = useLocation()
   const register = mode === 'register'
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
@@ -49,6 +50,11 @@ export default function Authentication({ mode }) {
       <div className="auth-panel panel">
         <h1>{register ? texts.signUp : texts.signIn}</h1>
         <p className="muted">{register ? texts.registerText : texts.loginText}</p>
+        {!register && location.state?.accountDeleted && (
+          <p className="form-success" role="status">
+            {texts.accountDeleted}
+          </p>
+        )}
         <form onSubmit={submit}>
           {register && (
             <div className="form-field">

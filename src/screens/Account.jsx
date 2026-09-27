@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { api, errorMessage } from '../api.js'
 import { useUser } from '../context/useUser.js'
 import { useLanguage } from '../context/useLanguage.js'
@@ -7,6 +8,7 @@ import PasswordInput from '../components/PasswordInput.jsx'
 export default function Account() {
   const { user, setUser, signOut } = useUser()
   const { texts, locale } = useLanguage()
+  const navigate = useNavigate()
   const [username, setUsername] = useState(user.username)
   const [currentPassword, setCurrentPassword] = useState('')
   const [password, setPassword] = useState('')
@@ -14,6 +16,8 @@ export default function Account() {
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState('')
   const [saving, setSaving] = useState(false)
+  const [deletePassword, setDeletePassword] = useState('')
+  const [deleteError, setDeleteError] = useState(null)
 
   function showError(error) {
     if (error.response?.status === 401) setUser(null)
@@ -66,6 +70,31 @@ export default function Account() {
       await signOut()
     } catch (error) {
       showError(error)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function removeAccount(event) {
+    event.preventDefault()
+    if (!window.confirm(texts.deleteAccountConfirm)) return
+
+    setDeleteError(null)
+    setError(null)
+    setSuccess('')
+    setSaving(true)
+    try {
+      await api.delete('/api/auth/account', { data: { password: deletePassword } })
+      setUser(null)
+      // Vaihdetaan sivu heti, jotta suojattu reitti ei ohita onnistumisviestiä.
+      navigate('/kirjaudu', {
+        replace: true,
+        state: { accountDeleted: true },
+        flushSync: true,
+      })
+    } catch (error) {
+      if (error.response?.status === 401) setUser(null)
+      else setDeleteError(error)
     } finally {
       setSaving(false)
     }
@@ -154,6 +183,25 @@ export default function Account() {
           </button>
         </form>
       </div>
+      <form className="panel delete-account" onSubmit={removeAccount}>
+        <h2>{texts.deleteAccount}</h2>
+        <p>{texts.deleteAccountText}</p>
+        <PasswordInput
+          id="delete-password"
+          label={texts.deleteAccountPassword}
+          value={deletePassword}
+          onChange={(event) => setDeletePassword(event.target.value)}
+          autoComplete="current-password"
+        />
+        {deleteError && (
+          <p className="form-error" role="alert">
+            {errorMessage(deleteError, texts)}
+          </p>
+        )}
+        <button className="button danger" type="submit" disabled={saving}>
+          {texts.deleteAccount}
+        </button>
+      </form>
     </section>
   )
 }

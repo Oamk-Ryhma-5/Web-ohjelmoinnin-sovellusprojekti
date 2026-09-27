@@ -4,6 +4,7 @@ import {
   signInUser,
   updatePassword,
   updateUsername,
+  deleteUser,
 } from '../models/User.js'
 import { deleteSession } from '../models/Session.js'
 import { readEmail, readPassword, readUsername } from '../helper/validation.js'
@@ -87,6 +88,21 @@ export async function changePassword(req, res, next) {
     const session = createSession()
     const user = await updatePassword(req.user.id, req.user.password_hash, hash, session)
     sendSession(res, user, session)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export async function deleteAccount(req, res, next) {
+  try {
+    const password = readPassword(req.body?.password)
+    if (!(await verifyPassword(password, req.user.password_hash))) {
+      throw new ApiError('Nykyinen salasana on väärin.', 400, 'WRONG_PASSWORD')
+    }
+    // Käyttäjä otetaan kirjautumisistunnosta, ei selaimen lähettämästä id:stä.
+    await deleteUser(req.user.id, req.user.password_hash)
+    res.clearCookie(cookieName, cookieOptions())
+    res.sendStatus(204)
   } catch (error) {
     next(error)
   }

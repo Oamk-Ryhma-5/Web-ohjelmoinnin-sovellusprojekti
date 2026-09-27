@@ -1,6 +1,5 @@
 import axios from 'axios'
 
-// Sama Axios-kirjasto kuin Docker-pohjassa ja Todo-tehtävässä.
 // Tyhjä osoite käyttää Viten /api-välitystä. Eväste kulkee pyynnön mukana.
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '',

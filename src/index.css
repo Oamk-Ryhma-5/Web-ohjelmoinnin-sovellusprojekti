@@ -1,8 +1,8 @@
 /* Yhteiset värit ja selaimen perusasetukset. */
 :root {
   font-family: Arial, Helvetica, sans-serif;
-  color: #252b33;
-  background: #f3f5f7;
+  color: var(--text);
+  background: var(--background);
   color-scheme: light;
   line-height: 1.5;
   --background: #f3f5f7;
@@ -11,8 +11,43 @@
   --text: #252b33;
   --muted: #58636e;
   --accent: #2d6da3;
-  --accent-hover: #245781;
   --soft-blue: #e8f1f8;
+  --header: #285e85;
+  --input-border: #a9b4be;
+  --subtle: #f0f2f4;
+  --genre: #406b3d;
+  --error-background: #fff1ed;
+  --error-text: #8f3328;
+  --error-border: #d6a99b;
+  --success-background: #edf6ec;
+  --success-text: #2d602e;
+  --success-border: #a5c3a2;
+  --summary-background: #fff8e8;
+  --summary-border: #dccba8;
+}
+
+/* Tumma tila vaihtaa vain värit. Samat komponentit toimivat molemmissa tiloissa. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --background: #171c22;
+  --surface: #232b34;
+  --border: #46525e;
+  --text: #edf1f5;
+  --muted: #bac4ce;
+  --accent: #95c9f0;
+  --soft-blue: #253848;
+  --header: #1d3d56;
+  --input-border: #738291;
+  --subtle: #303a45;
+  --genre: #accf9b;
+  --error-background: #442b2a;
+  --error-text: #ffc0b6;
+  --error-border: #a56860;
+  --success-background: #243c2b;
+  --success-text: #b3deb7;
+  --success-border: #688d6b;
+  --summary-background: #393324;
+  --summary-border: #847345;
 }
 
 * {

@@ -1,6 +1,7 @@
 import { Link, NavLink } from 'react-router-dom'
 import { useUser } from '../context/useUser.js'
 import { useLanguage } from '../context/useLanguage.js'
+import ThemeSelect from './ThemeSelect.jsx'
 
 export default function Header() {
   const { user, loading } = useUser()
@@ -37,6 +38,7 @@ export default function Header() {
               EN
             </button>
           </div>
+          <ThemeSelect />
           {!loading &&
             (user ? (
               <NavLink

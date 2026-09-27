@@ -6,6 +6,7 @@ import app from '../app.js'
 import { pool } from '../models/db.js'
 import { migrate } from '../models/migrate.js'
 import { hashPassword } from '../helper/password.js'
+import { deleteUser } from '../models/User.js'
 import { createTestDatabase } from './helpers/database.js'
 
 const user = { username: 'Testaaja', email: 'test@example.com', password: 'Testi123' }
@@ -312,4 +313,108 @@ test('HTTPS-asetus lisää Secure-evästeen', async () => {
     if (previous === undefined) delete process.env.SESSION_COOKIE_SECURE
     else process.env.SESSION_COOKIE_SECURE = previous
   }
+})
+
+test('tilin poisto poistaa vain istunnon käyttäjän ja kaikki hänen istuntonsa', async () => {
+  const first = await register()
+  const otherSession = await request('/login', { method: 'POST', body: user })
+  const second = await register({ ...user, username: 'Toinen', email: 'second@example.com' })
+  const removed = await request('/account', {
+    method: 'DELETE',
+    cookie: first.cookie,
+    // Selaimesta lähetetty toisen käyttäjän id ei saa vaikuttaa poistoon.
+    body: { password: user.password, id: second.body.user.id, email: 'second@example.com' },
+  })
+  assert.equal(removed.status, 204)
+  assert.match(removed.headers.get('set-cookie'), /Expires=Thu, 01 Jan 1970/)
+  assert.equal(removed.headers.get('cache-control'), 'no-store')
+  assert.equal((await request('/me', { cookie: first.cookie })).status, 401)
+  assert.equal((await request('/me', { cookie: otherSession.cookie })).status, 401)
+  assert.equal((await request('/me', { cookie: second.cookie })).status, 200)
+  assert.deepEqual((await database.query('SELECT id FROM app_users')).rows, [
+    { id: second.body.user.id },
+  ])
+  assert.deepEqual((await database.query('SELECT user_id FROM app_sessions')).rows, [
+    { user_id: second.body.user.id },
+  ])
+  assert.equal((await request('/login', { method: 'POST', body: user })).status, 401)
+  assert.equal((await register()).status, 201)
+})
+
+test('väärä, puuttuva tai virheellinen salasana ei poista tiliä', async () => {
+  const { cookie } = await register()
+  for (const password of [undefined, '', [], 'x'.repeat(129), 'Wrong123']) {
+    const result = await request('/account', { method: 'DELETE', cookie, body: { password } })
+    assert.equal(result.status, 400)
+    assert.equal(result.cookie, undefined)
+  }
+  assert.equal((await request('/me', { cookie })).status, 200)
+  assert.equal((await database.query('SELECT * FROM app_users')).rows.length, 1)
+  assert.equal((await database.query('SELECT * FROM app_sessions')).rows.length, 1)
+})
+
+test('tiliä ei voi poistaa ilman voimassa olevaa kirjautumista', async () => {
+  const registered = await register()
+  for (const cookie of [undefined, `leffahaku_session=${'x'.repeat(43)}`]) {
+    const result = await request('/account', {
+      method: 'DELETE',
+      cookie,
+      body: { password: user.password },
+    })
+    assert.equal(result.status, 401)
+  }
+  await database.query("UPDATE app_sessions SET expires_at = now() - interval '1 second'")
+  assert.equal(
+    (
+      await request('/account', {
+        method: 'DELETE',
+        cookie: registered.cookie,
+        body: { password: user.password },
+      })
+    ).status,
+    401,
+  )
+  assert.equal((await database.query('SELECT * FROM app_users')).rows.length, 1)
+})
+
+test('tilin poistossa vaaditaan oman sovelluksen pyyntöotsakkeet', async () => {
+  const { cookie } = await register()
+  for (const headers of [
+    { Origin: 'https://untrusted.example' },
+    { 'X-Leffahaku-Request': '' },
+    { 'Content-Type': 'text/plain' },
+  ]) {
+    const result = await request('/account', {
+      method: 'DELETE',
+      cookie,
+      body: { password: user.password },
+      headers,
+    })
+    assert.equal(result.status, 403)
+  }
+  assert.equal((await request('/me', { cookie })).status, 200)
+})
+
+test('tilin poiston salasanayrityksiä rajoitetaan', async () => {
+  const { cookie } = await register()
+  // Rekisteröinti käytti saman IP:n 30 yrityksestä ensimmäisen.
+  for (let count = 0; count < 29; count += 1) {
+    assert.equal((await request('/account', { method: 'DELETE', cookie, body: {} })).status, 400)
+  }
+  const result = await request('/account', { method: 'DELETE', cookie, body: {} })
+  assert.equal(result.status, 429)
+  assert.ok(Number(result.headers.get('retry-after')) > 0)
+  assert.equal((await request('/me', { cookie })).status, 200)
+})
+
+test('salasanan samanaikainen vaihtuminen estää tilin poiston vanhalla tarkistuksella', async () => {
+  await register()
+  const saved = (await database.query('SELECT * FROM app_users')).rows[0]
+  await database.query('UPDATE app_users SET password_hash = $1 WHERE id = $2', [
+    await hashPassword('Uusi1234'),
+    saved.id,
+  ])
+  await assert.rejects(deleteUser(saved.id, saved.password_hash), { code: 'ACCOUNT_CHANGED' })
+  assert.equal((await database.query('SELECT * FROM app_users')).rows.length, 1)
+  assert.equal((await database.query('SELECT * FROM app_sessions')).rows.length, 1)
 })

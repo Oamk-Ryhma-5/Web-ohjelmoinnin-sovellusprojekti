@@ -64,6 +64,18 @@ export async function updateUsername(userId, username) {
   return result.rows[0]
 }
 
+export async function deleteUser(userId, passwordHash) {
+  // Istunnot poistuvat samalla: app_sessions-taulussa on ON DELETE CASCADE.
+  // Salasanan yhtäaikainen vaihtaminen estää poiston vanhalla salasanalla.
+  const result = await pool.query(
+    'DELETE FROM app_users WHERE id = $1 AND password_hash = $2 RETURNING id',
+    [userId, passwordHash],
+  )
+  if (result.rowCount === 0) {
+    throw new ApiError('Tiedot muuttuivat. Kirjaudu uudelleen.', 409, 'ACCOUNT_CHANGED')
+  }
+}
+
 export async function updatePassword(userId, oldHash, newHash, session) {
   const client = await pool.connect()
   try {

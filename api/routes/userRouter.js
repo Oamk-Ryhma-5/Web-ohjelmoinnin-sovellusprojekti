@@ -6,6 +6,7 @@ import {
   getCurrentUser,
   changeUsername,
   changePassword,
+  deleteAccount,
 } from '../controllers/UserController.js'
 import { auth } from '../middleware/auth.js'
 import { checkRequest } from '../middleware/checkRequest.js'
@@ -21,5 +22,6 @@ router.post('/logout', logout)
 router.get('/me', auth, getCurrentUser)
 router.patch('/profile', auth, changeUsername)
 router.post('/password', auth, limit, changePassword)
+router.delete('/account', auth, limit, deleteAccount)
 
 export default router
