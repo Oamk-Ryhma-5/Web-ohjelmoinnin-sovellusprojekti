@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useLanguage } from '../context/useLanguage.js';
 import { useUser } from '../context/useUser.js';
 import MovieList from '../components/MovieList.jsx';
 
 export default function Home() {
-  const { texts } = useLanguage();
+  const { texts, language } = useLanguage();
   const { user } = useUser();
   const [query, setQuery] = useState('');
   const navigate = useNavigate();
@@ -33,7 +33,15 @@ export default function Home() {
           </div>
         </form>
       </section>
+      <section className="catalog-section" aria-labelledby="now-playing-title">
+        <div className="section-heading">
+          <h2 id="now-playing-title">{texts.nowPlaying}</h2>
+          <Link className="text-link" to="/haku">
+            {texts.browseSearch}
+          </Link>
+        </div>
+        <MovieList key={language} url="/api/movies/now-playing" />
+      </section>
     </div>
   );
 }
-
