@@ -59,6 +59,26 @@ export async function selectGenres(type, language) {
   return data.genres.sort((a, b) => a.name.localeCompare(b.name, language))
 }
 
+export async function selectMovie(id, language) {
+  // Hakee elokuvan tiedot TMDB:stä id:n perusteella.
+  const data = await getFromTmdb(`/movie/${id}`, { language })
+
+  return {
+    id: data.id,
+    type: 'movie',
+    title: data.title || '',
+    year: data.release_date ? data.release_date.slice(0, 4) : '',
+    overview: data.overview || '',
+    posterUrl: imageUrl(data.poster_path, 'w500'),
+    backdropUrl: imageUrl(data.backdrop_path, 'w1280'),
+    genres: Array.isArray(data.genres) ? data.genres : [],
+    rating:
+      data.vote_count > 0 && typeof data.vote_average === 'number'
+        ? data.vote_average
+        : null,
+  }
+}
+
 export async function selectNowPlaying(page, language) {
   // FI tarkoittaa Suomen teatteriohjelmistoa, ei elokuvan tuotantomaata.
   const data = await getFromTmdb('/movie/now_playing', { region: 'FI', page, language })

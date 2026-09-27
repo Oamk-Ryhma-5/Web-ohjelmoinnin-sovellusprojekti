@@ -2,12 +2,15 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import App from './App.jsx'
+
 import Home from './screens/Home.jsx'
 import Search from './screens/Search.jsx'
 import Authentication from './screens/Authentication.jsx'
 import Account from './screens/Account.jsx'
 import About from './screens/About.jsx'
 import NotFound from './screens/NotFound.jsx'
+import MovieDetails from './screens/MovieDetails.jsx'
+
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import UserProvider from './context/UserProvider.jsx'
 import LanguageProvider from './context/LanguageProvider.jsx'
@@ -21,6 +24,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: 'haku', element: <Search /> },
+      { path: 'movie/:id', element: <MovieDetails /> },
       { path: 'kirjaudu', element: <Authentication key="login" mode="login" /> },
       { path: 'rekisteroidy', element: <Authentication key="register" mode="register" /> },
       {
