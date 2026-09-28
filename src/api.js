@@ -12,8 +12,8 @@ export function errorMessage(error, texts) {
   const code = error?.response?.data?.error?.code || error?.code
   if (texts.errors[code]) return texts.errors[code]
   return texts.errors.SERVER_ERROR
-  
 }
+
 // Hae käyttäjän suosikit
 export const fetchFavorites = async () => {
   const response = await api.get('/api/favorites');
@@ -28,6 +28,10 @@ export const addFavoriteApi = async (movieData) => {
 
 // Poista elokuva suosikeista
 export const removeFavoriteApi = async (movieId) => {
-  const response = await api.delete(`/api/favorites/${movieId}`);
+  const response = await api.delete(`/api/favorites/${movieId}`, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
   return response.data;
 };

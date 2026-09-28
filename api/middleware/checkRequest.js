@@ -15,12 +15,16 @@ export function checkRequest(req, res, next) {
 
   const origin = req.get('Origin')
   const ownRequest = req.get('X-Leffahaku-Request') === '1'
-  if (
-    !ownRequest ||
-    !req.is('application/json') ||
-    (origin && !allowedOrigins().includes(origin))
-  ) {
+
+  // 1. Tarkistetaan mukautettu otsake ja Origin
+  if (!ownRequest || (origin && !allowedOrigins().includes(origin))) {
     return next(new ApiError('Pyyntöä ei sallittu.', 403, 'REQUEST_REJECTED'))
   }
+
+  // 2. Vaaditaan application/json vain pyynnöiltä, joissa on runko (POST, PUT, PATCH)
+  if (['POST', 'PUT', 'PATCH'].includes(req.method) && !req.is('application/json')) {
+    return next(new ApiError('Pyyntöä ei sallittu.', 403, 'REQUEST_REJECTED'))
+  }
+
   next()
 }
