@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import App from './App.jsx'
+
 import Home from './screens/Home.jsx'
 import Search from './screens/Search.jsx'
 import Authentication from './screens/Authentication.jsx'
@@ -9,6 +10,9 @@ import Groups from './screens/Groups.jsx'
 import Account from './screens/Account.jsx'
 import About from './screens/About.jsx'
 import NotFound from './screens/NotFound.jsx'
+import MovieDetails from './screens/MovieDetails.jsx'
+import Favorites from './screens/favorites.jsx' // 1. Tuodaan Favorites-ruutu
+
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import UserProvider from './context/UserProvider.jsx'
 import LanguageProvider from './context/LanguageProvider.jsx'
@@ -22,13 +26,20 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: 'haku', element: <Search /> },
+      { path: 'movie/:id', element: <MovieDetails /> },
       { path: 'kirjaudu', element: <Authentication key="login" mode="login" /> },
       { path: 'rekisteroidy', element: <Authentication key="register" mode="register" /> },
-    
-      { path: 'groups', element: <Groups />},    
-      {  element: <ProtectedRoute />,
-        children: [{ path: 'omat-tiedot', element: <Account /> }],
+      { path: 'groups', element: <Groups /> },
+      
+      // Suojatut reitit (vaativat kirjautumisen)
+      { 
+        element: <ProtectedRoute />,
+        children: [
+          { path: 'omat-tiedot', element: <Account /> },
+          { path: 'suosikit', element: <Favorites /> } // 2. Lisätty suosikit tänne!
+        ],
       },
+      
       { path: 'tietoa', element: <About /> },
       { path: '*', element: <NotFound /> },
     ],

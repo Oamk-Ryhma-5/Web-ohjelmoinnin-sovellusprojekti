@@ -4,6 +4,7 @@ import cors from 'cors'
 import testRouter from './routes/testRouter.js'
 import movieRouter from './routes/movieRouter.js'
 import userRouter from './routes/userRouter.js'
+import favoriteRouter from './routes/favoriteRouter.js' // 1. Tuodaan uusi reititin
 import errorHandler from './middleware/errorHandler.js'
 import { allowedOrigins } from './middleware/checkRequest.js'
 import { pool } from './models/db.js'
@@ -14,10 +15,11 @@ app.disable('x-powered-by')
 app.use(cors({ origin: allowedOrigins(), credentials: true }))
 app.use(express.json({ limit: '16kb' }))
 
-// Alkuperäisen Docker-pohjan esimerkkireitti ja terveystarkistus säilyvät.
+// Reitit
 app.use('/', testRouter)
 app.use('/api', movieRouter)
 app.use('/api/auth', userRouter)
+app.use('/api/favorites', favoriteRouter) // 2. Kytketään osoitteeseen /api/favorites
 
 app.get('/api/health', async (_req, res) => {
   try {

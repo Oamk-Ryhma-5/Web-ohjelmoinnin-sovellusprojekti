@@ -18,7 +18,13 @@ export default function Header() {
             {texts.theaters}
           </NavLink>
           <NavLink to="/haku">{texts.search}</NavLink>
-        <NavLink to="/groups">{texts.groups}</NavLink> 
+          <NavLink to="/groups">{texts.groups}</NavLink>
+          {/* Näytetään suosikit navigaatiossa vain kirjautuneelle käyttäjälle */}
+          {user && (
+            <NavLink to="/suosikit">
+              {texts.favorites || 'Suosikit'}
+            </NavLink>
+          )}
         </nav>
         
         <div className="header-actions">

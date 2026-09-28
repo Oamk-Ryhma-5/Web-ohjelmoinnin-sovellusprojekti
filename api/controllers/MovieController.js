@@ -1,4 +1,4 @@
-import { selectGenres, selectMovies, selectNowPlaying } from '../models/Movie.js'
+import { selectGenres, selectMovie, selectMovies, selectNowPlaying } from '../models/Movie.js'
 import { ApiError } from '../helper/ApiError.js'
 
 function text(value, maxLength = 200) {
@@ -49,6 +49,23 @@ export async function getGenres(req, res, next) {
   try {
     const { type, language } = readFilters(req.query)
     res.json({ genres: await selectGenres(type, language) })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// Hakee elokuvan tiedot id:n perusteella
+export async function getMovie(req, res, next) {
+  try {
+    const id = Number(req.params.id)
+    const language = text(req.query.language, 5) || 'fi-FI'
+
+    // Tarkistaa, että URL:sta saatu id on kelvollinen numero.
+    if (!Number.isInteger(id) || id < 1) {
+      throw new ApiError('Virheellinen elokuvan tunniste.', 400, 'INVALID_MOVIE_ID')
+    }
+
+    res.json(await selectMovie(id, language))
   } catch (error) {
     next(error)
   }
