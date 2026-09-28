@@ -1,23 +1,26 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { api, addFavoriteApi } from '../api.js'
+import { useParams } from 'react-router-dom' // ✅ OIKEIN
+import { api, addFavoriteApi, errorMessage } from '../api.js'
 import { useLanguage } from '../context/useLanguage.js'
 import { useUser } from '../context/useUser.js'
 
 export default function MovieDetails() {
   const { id } = useParams()
-  const { locale } = useLanguage()
+  const { locale, texts } = useLanguage()
   const { user } = useUser()
   const [movie, setMovie] = useState(null)
   const [favoriteStatus, setFavoriteStatus] = useState('')
 
   useEffect(() => {
     async function loadMovie() {
-      const response = await api.get(`/api/movies/${id}`, {
-        params: { language: locale },
-      })
-
-      setMovie(response.data)
+      try {
+        const response = await api.get(`/api/movies/${id}`, {
+          params: { language: locale },
+        })
+        setMovie(response.data)
+      } catch (err) {
+        console.error('Virhe elokuvan latauksessa:', err)
+      }
     }
 
     loadMovie()
@@ -25,7 +28,7 @@ export default function MovieDetails() {
 
   const handleAddFavorite = async () => {
     try {
-      setFavoriteStatus('Tallennetaan...')
+      setFavoriteStatus(texts.loading)
       
       let poster = movie.posterUrl || movie.poster_path || ''
       if (poster.startsWith('https://image.tmdb.org/t/p/')) {
@@ -38,50 +41,52 @@ export default function MovieDetails() {
         posterPath: poster,
       })
 
-      setFavoriteStatus('❤️ Lisätty suosikkeihin!')
+      setFavoriteStatus(`❤️ ${texts.inFavorites}`)
     } catch (err) {
       console.error('Suosikkivirhe:', err)
-      if (err.response && err.response.status === 409) {
-        setFavoriteStatus('Elokuva on jo suosikeissasi!')
-      } else {
-        setFavoriteStatus('Lisääminen epäonnistui. Kirjaudu uudelleen sisään.')
-      }
+      setFavoriteStatus(errorMessage(err, texts))
     }
   }
 
   if (!movie) {
-    return <p>Ladataan...</p>
+    return <p>{texts.loading}</p>
   }
 
   return (
     <section className="movie-details">
-      {movie.posterUrl && (
+      {movie.posterUrl ? (
         <img
           className="movie-details-poster"
           src={movie.posterUrl}
-          alt={movie.title}
+          alt={movie.title || texts.titleMissing}
         />
+      ) : (
+        <div className="movie-details-poster-placeholder">
+          {texts.posterMissing}
+        </div>
       )}
 
       <div>
-        <h1>{movie.title}</h1>
+        <h1>{movie.title || texts.titleMissing}</h1>
 
-        <p className="movie-meta">
-          {movie.year} · {movie.genres.map((genre) => genre.name).join(' · ')}
-        </p>
+        {movie.genres && (
+          <p className="movie-meta">
+            {movie.year} · {movie.genres.map((genre) => genre.name).join(' · ')}
+          </p>
+        )}
 
-        {movie.rating !== null && (
+        {movie.rating !== null && movie.rating !== undefined && (
           <p>★ {movie.rating.toFixed(1)}</p>
         )}
 
         <p className="movie-description">
-          {movie.overview || 'Kuvausta ei ole saatavilla.'}
+          {movie.overview || texts.descriptionMissing}
         </p>
 
         {user && (
           <div style={{ marginTop: '20px' }}>
             <button className="button" onClick={handleAddFavorite}>
-              ❤️ Lisää suosikkeihin
+              ❤️ {texts.addToFavorites}
             </button>
             {favoriteStatus && <p style={{ marginTop: '8px' }}>{favoriteStatus}</p>}
           </div>
