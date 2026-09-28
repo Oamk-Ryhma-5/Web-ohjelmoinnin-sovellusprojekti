@@ -1,31 +1,31 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react'; //tässä tuodaan reactin perustoimintoja
+import { useNavigate } from 'react-router-dom'; //reititystyökalu
 import { useLanguage } from '../context/useLanguage.js';
 import { useUser } from '../context/useUser.js';
 
 export default function Groups() {
   const { texts } = useLanguage();
   const { user } = useUser();
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(''); //pitää kirjaa kenttään kirjoitetusta tekstistä
   
   const [groups, setGroups] = useState([
     { id: 1, name: 'Sci-Fi Leffakerho' },
-    { id: 2, name: 'Kauhuelokuvien ystävät' }
+    { id: 2, name: 'Kauhuelokuvien ystävät' } //kovakoodattuja esimerkkejä ryhmistä.
   ]);
-  const [newGroupName, setNewGroupName] = useState('');
-  const navigate = useNavigate();
+  const [newGroupName, setNewGroupName] = useState('');  //tallentaa uuden ryhmän nimen
+  const navigate = useNavigate(); //hookki joka ohjaa käyttäjän eteenpäin hakusivulle
 
   function search(event) {
-    event.preventDefault();
+    event.preventDefault();  //tämä estää sivun uudelleenlatautumisen
     navigate(`/haku?q=${encodeURIComponent(query.trim())}`);
   }
 
-  function handleCreateGroup(event) {
+  function handleCreateGroup(event) { //lisää ryhmän listaan jos nimi ei ole tyhjä samalla luodaan tunniste 
     event.preventDefault();
     if (!newGroupName.trim()) return;
 
     const newGroup = {
-      id: Date.now(),
+      id: Date.now(), //tämä luo yllä mainitun tunnisteen aikaleiman mukaan
       name: newGroupName.trim()
     };
 
@@ -33,7 +33,7 @@ export default function Groups() {
     setNewGroupName('');
   }
 
-  function handleDeleteGroup(id) {
+  function handleDeleteGroup(id) { //täällä poistetaan ryhmä idn perusteella
     setGroups(groups.filter(group => group.id !== id));
   }
 
@@ -60,7 +60,7 @@ export default function Groups() {
       <section className="groups-section" style={{ marginTop: '2rem', padding: '1rem' }}>
         <h2>{texts.groups || 'Ryhmät'}</h2>
 
-        {user ? (
+        {user ? ( //tarkistaa onko käyttäjä kirjautunut sisään jos on näyttää lomakkeen ryhmän luomiseen jos ei kehoitus kirjautumiseen
           <div className="logged-in-content">
             <form onSubmit={handleCreateGroup} style={{ marginBottom: '1rem' }}>
               <input
@@ -77,7 +77,7 @@ export default function Groups() {
           <p>kirjautuminen.</p>
         )}
 
-        <ul style={{ listStyle: 'none', padding: 0, marginTop: '1rem' }}>
+        <ul style={{ listStyle: 'none', padding: 0, marginTop: '1rem' }}> //ryhmälista
           {groups.map(group => (
             <li key={group.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', padding: '0.5rem', background: '#f9f9f9' }}>
               <span>{group.name}</span>
