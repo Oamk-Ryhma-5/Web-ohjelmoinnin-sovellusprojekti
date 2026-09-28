@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 
 // Sama päivitys toimii myös jo käytössä olevaan Docker-tietokantaan.
 // Transaktio ja lukko estävät puolikkaan tai kahdesti ajetun päivityksen.
+
 export async function migrate(pool) {
   const client = await pool.connect()
   try {
@@ -10,7 +11,8 @@ export async function migrate(pool) {
     await client.query(`CREATE TABLE IF NOT EXISTS leffahaku_migrations (
       name TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
     )`)
-    for (const name of ['001_accounts.sql']) {
+
+    for (const name of ['001_accounts.sql', '002_favorites.sql']) {
       const { rows } = await client.query('SELECT name FROM leffahaku_migrations WHERE name = $1', [
         name,
       ])

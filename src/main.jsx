@@ -11,6 +11,7 @@ import Account from './screens/Account.jsx'
 import About from './screens/About.jsx'
 import NotFound from './screens/NotFound.jsx'
 import MovieDetails from './screens/MovieDetails.jsx'
+import Favorites from './screens/favorites.jsx' // 1. Tuodaan Favorites-ruutu
 
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import UserProvider from './context/UserProvider.jsx'
@@ -28,11 +29,17 @@ const router = createBrowserRouter([
       { path: 'movie/:id', element: <MovieDetails /> },
       { path: 'kirjaudu', element: <Authentication key="login" mode="login" /> },
       { path: 'rekisteroidy', element: <Authentication key="register" mode="register" /> },
-    
-      { path: 'groups', element: <Groups />},    
-      {  element: <ProtectedRoute />,
-        children: [{ path: 'omat-tiedot', element: <Account /> }],
+      { path: 'groups', element: <Groups /> },
+      
+      // Suojatut reitit (vaativat kirjautumisen)
+      { 
+        element: <ProtectedRoute />,
+        children: [
+          { path: 'omat-tiedot', element: <Account /> },
+          { path: 'suosikit', element: <Favorites /> } // 2. Lisätty suosikit tänne!
+        ],
       },
+      
       { path: 'tietoa', element: <About /> },
       { path: '*', element: <NotFound /> },
     ],

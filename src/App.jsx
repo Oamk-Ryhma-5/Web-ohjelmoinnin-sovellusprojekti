@@ -17,6 +17,7 @@ export default function App() {
       '/rekisteroidy': texts.signUp,
       '/omat-tiedot': texts.account,
       '/tietoa': texts.about,
+      '/suosikit': texts.favorites,
     }
     document.title = `Leffahaku · ${titles[pathname] || texts.notFound}`
   }, [pathname, texts])

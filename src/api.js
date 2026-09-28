@@ -12,4 +12,22 @@ export function errorMessage(error, texts) {
   const code = error?.response?.data?.error?.code || error?.code
   if (texts.errors[code]) return texts.errors[code]
   return texts.errors.SERVER_ERROR
+  
 }
+// Hae käyttäjän suosikit
+export const fetchFavorites = async () => {
+  const response = await api.get('/api/favorites');
+  return response.data;
+};
+
+// Lisää elokuva suosikkeihin
+export const addFavoriteApi = async (movieData) => {
+  const response = await api.post('/api/favorites', movieData);
+  return response.data;
+};
+
+// Poista elokuva suosikeista
+export const removeFavoriteApi = async (movieId) => {
+  const response = await api.delete(`/api/favorites/${movieId}`);
+  return response.data;
+};
