@@ -5,15 +5,16 @@ import { getUserFavorites, addFavorite, removeFavorite } from '../models/favorit
 
 const router = Router()
 
+// Middlewaret: tarkistetaan pyynnön kelvollisuus ja käyttäjän tunnistautuminen
 router.use(checkRequest)
 router.use(auth)
 
-// Apufunktio käyttäjän ID:n hakemiseen pyynnöstä
+// Apufunktio käyttäjän ID:n hakemiseen tokenista/pyynnöstä
 const getAccountId = (req) => {
   return req.user?.id ?? req.user?.account_id ?? req.user?.accountId
 }
 
-// POST /api/favorites - Lisää suosikki
+// POST /api/favorites - Lisää elokuva tai sarja suosikkeihin
 router.post('/', async (req, res, next) => {
   try {
     const accountId = getAccountId(req)
@@ -36,7 +37,7 @@ router.post('/', async (req, res, next) => {
   }
 })
 
-// GET /api/favorites - Hae suosikit
+// GET /api/favorites - Hae käyttäjän kaikki suosikit
 router.get('/', async (req, res, next) => {
   try {
     const accountId = getAccountId(req)
@@ -52,7 +53,7 @@ router.get('/', async (req, res, next) => {
   }
 })
 
-// DELETE /api/favorites/:movieId - Poista suosikki
+// DELETE /api/favorites/:movieId - Poista elokuva tai sarja suosikeista
 router.delete('/:movieId', async (req, res, next) => {
   try {
     const accountId = getAccountId(req)
