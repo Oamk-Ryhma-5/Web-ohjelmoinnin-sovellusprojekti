@@ -50,10 +50,25 @@ groupRouter.post('/', async (req, res, next) => {
   }
 })
 
-// 4. Poistaa ryhmän (Vaatimus 7 - Omistaja/Admin)
+// 4. Poistaa ryhmän (Vaatimus 7 - Vain omistaja)
 groupRouter.delete('/:id', async (req, res, next) => {
   const { id } = req.params
+  const userId = req.body?.user_id || req.headers['x-user-id']
+
   try {
+    // Haetaan ryhmä tietokannasta ja tarkistetaan omistaja
+    const groupResult = await pool.query('SELECT owner_id FROM groups WHERE id = $1', [id])
+    if (groupResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Group not found' })
+    }
+
+    const group = groupResult.rows[0]
+
+    // Tarkistetaan, että poistaja on ryhmän omistaja
+    if (userId && String(group.owner_id) !== String(userId)) {
+      return res.status(403).json({ error: 'Only group owner can delete the group' })
+    }
+
     await pool.query('DELETE FROM groups WHERE id = $1', [id])
     res.json({ message: 'Group deleted successfully', id: Number(id) })
   } catch (error) {
