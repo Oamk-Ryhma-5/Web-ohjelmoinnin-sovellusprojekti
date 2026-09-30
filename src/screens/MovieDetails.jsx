@@ -4,12 +4,11 @@ import { api, addFavoriteApi, errorMessage } from '../api.js'
 import { useLanguage } from '../context/useLanguage.js'
 import { useUser } from '../context/useUser.js'
 
-// Korjattu isompi alkukirjain ja tiedoston nimi
-import AddToGroupModal from '../components/AddToGroupModal.jsx'
+import AddToGroupModel from '../components/AddToGroupModel.jsx'
 
 export default function MovieDetails() {
   const { id } = useParams()
-  const { locale, texts } = useLanguage()
+  const { locale, texts } = useLanguage() 
   const { user } = useUser()
   const [movie, setMovie] = useState(null)
   const [favoriteStatus, setFavoriteStatus] = useState('')
@@ -97,7 +96,7 @@ export default function MovieDetails() {
             </div>
 
             {/* Nappi ryhmään lisäämiselle */}
-            <AddToGroupModal movie={movie} />
+            <AddToGroupModel movie={movie} />
           </div>
         )}
       </div>

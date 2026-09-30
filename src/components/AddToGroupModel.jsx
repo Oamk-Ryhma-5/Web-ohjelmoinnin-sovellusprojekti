@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useUser } from '../context/useUser.js';
 import { useLanguage } from '../context/useLanguage.js';
 
-export default function AddToGroupModal({ movie }) {
+export default function AddToGroupModel({ movie }) {
   const { user } = useUser();
   const { texts } = useLanguage();
   const [userGroups, setUserGroups] = useState([]);
