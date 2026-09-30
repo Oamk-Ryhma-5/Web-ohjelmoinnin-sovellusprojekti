@@ -2,6 +2,8 @@
 -- No need to create database manually since PostgreSQL container handles this
 
 -- Tyhjennetään vanhat taulut oikeassa riippuvuusjärjestyksessä
+DROP TABLE IF EXISTS group_comments;
+DROP TABLE IF EXISTS reviews;
 DROP TABLE IF EXISTS group_movies;
 DROP TABLE IF EXISTS group_members;
 DROP TABLE IF EXISTS groups;
@@ -46,7 +48,7 @@ CREATE TABLE IF NOT EXISTS app_sessions (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Suosikit
+-- Suosikit (Vaatimukset 13 & 14)
 CREATE TABLE IF NOT EXISTS favorites (
     id SERIAL PRIMARY KEY,
     account_id INT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
@@ -57,7 +59,18 @@ CREATE TABLE IF NOT EXISTS favorites (
     UNIQUE(account_id, movie_id)
 );
 
--- Ryhmät
+-- Arvostelut (Vaatimukset 11 & 12)
+CREATE TABLE IF NOT EXISTS reviews (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+    movie_id VARCHAR(100) NOT NULL,
+    movie_title VARCHAR(255),
+    stars INT CHECK (stars >= 1 AND stars <= 5),
+    review_text TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Ryhmät (Vaatimus 7)
 CREATE TABLE IF NOT EXISTS groups (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -87,6 +100,16 @@ CREATE TABLE IF NOT EXISTS group_movies (
     UNIQUE(group_id, movie_id)
 );
 
--- Esimerkkiryhmä ja omistajan automaattinen jäsenyys
+-- Ryhmän keskustelu / kommentit (Lisäominaisuus)
+CREATE TABLE IF NOT EXISTS group_comments (
+    id SERIAL PRIMARY KEY,
+    group_id INT NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    user_id INT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+    comment_text TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Esimerkkiryhmä, jäsenyys ja ensimmäinen viesti
 INSERT INTO groups (id, name, owner_id) VALUES (1, 'Sci-Fi Leffakerho', 1) ON CONFLICT DO NOTHING;
 INSERT INTO group_members (group_id, user_id, status) VALUES (1, 1, 'accepted') ON CONFLICT DO NOTHING;
+INSERT INTO group_comments (group_id, user_id, comment_text) VALUES (1, 1, 'Tervetuloa Sci-Fi Leffakerhoon! Mitä katsotaan tänään?') ON CONFLICT DO NOTHING;
