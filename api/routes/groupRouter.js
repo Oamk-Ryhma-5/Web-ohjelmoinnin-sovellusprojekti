@@ -56,7 +56,6 @@ groupRouter.delete('/:id', async (req, res, next) => {
   const userId = req.body?.user_id || req.headers['x-user-id']
 
   try {
-    // Haetaan ryhmä tietokannasta ja tarkistetaan omistaja
     const groupResult = await pool.query('SELECT owner_id FROM groups WHERE id = $1', [id])
     if (groupResult.rows.length === 0) {
       return res.status(404).json({ error: 'Group not found' })
@@ -64,7 +63,6 @@ groupRouter.delete('/:id', async (req, res, next) => {
 
     const group = groupResult.rows[0]
 
-    // Tarkistetaan, että poistaja on ryhmän omistaja
     if (userId && String(group.owner_id) !== String(userId)) {
       return res.status(403).json({ error: 'Only group owner can delete the group' })
     }
@@ -180,16 +178,22 @@ groupRouter.post('/:id/movies', async (req, res, next) => {
   }
 })
 
-// Poistaa elokuvan ryhmän sivulta
+// Poistaa elokuvan ryhmän sivulta (varmistetaan tyypinmuunnos)
 groupRouter.delete('/:id/movies/:movieId', async (req, res, next) => {
   const { id, movieId } = req.params
   try {
-    await pool.query(
-      'DELETE FROM group_movies WHERE group_id = $1 AND movie_id = $2',
-      [id, movieId]
+    const result = await pool.query(
+      'DELETE FROM group_movies WHERE group_id = $1 AND (movie_id = $2 OR movie_id = $3)',
+      [id, movieId, Number(movieId)]
     )
+    
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Movie not found in group' })
+    }
+
     res.json({ message: 'Movie removed from group successfully' })
   } catch (error) {
+    console.error('Virhe elokuvan poistossa backendissä:', error)
     next(error)
   }
 })

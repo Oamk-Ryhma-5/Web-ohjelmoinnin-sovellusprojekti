@@ -1,203 +1,174 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { useLanguage } from '../context/useLanguage.js';
+import { useParams, useLocation } from 'react-router-dom';
 import { useUser } from '../context/useUser.js';
+import { useLanguage } from '../context/useLanguage.js';
 
 export default function GroupDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useUser();
   const { texts } = useLanguage();
-  const { user: currentUser } = useUser(); // Noudetaan kirjautunut käyttäjä suoraan contextista
 
   const [group, setGroup] = useState(location.state?.group || null);
-  const [members, setMembers] = useState([]);
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Apufunktio kuvan URL-osoitteen tarkistukseen ja muodostamiseen
-  function getPosterUrl(posterPath) {
-    if (!posterPath) return null;
-    if (posterPath.startsWith('http://') || posterPath.startsWith('https://')) {
-      return posterPath;
-    }
-    return `https://image.tmdb.org/t/p/w200${posterPath.startsWith('/') ? '' : '/'}${posterPath}`;
-  }
-
+  // Haetaan ryhmän tiedot
   useEffect(() => {
-    fetchGroupDetails();
+    if (!group) {
+      fetch(`/api/groups/${id}`)
+        .then((res) => res.json())
+        .then((data) => setGroup(data))
+        .catch((err) => console.error('Virhe ryhmän tiedoin hakemisessa:', err));
+    }
+  }, [id, group]);
+
+  // Haetaan ryhmään lisätyt elokuvat
+  useEffect(() => {
+    fetch(`/api/groups/${id}/movies`)
+      .then((res) => res.json())
+      .then((data) => {
+        setMovies(Array.isArray(data) ? data : []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Virhe elokuvien hakemisessa:', err);
+        setLoading(false);
+      });
   }, [id]);
 
-  const fetchGroupDetails = async () => {
+  // Elokuvan poistaminen ryhmästä
+  async function handleDeleteMovie(movieId) {
     try {
-      // 1. Haetaan ryhmän perustiedot
-      if (!group) {
-        const resGroup = await fetch(`/api/groups/${id}`);
-        if (resGroup.ok) {
-          const groupData = await resGroup.json();
-          setGroup(groupData);
-        }
-      }
+      const response = await fetch(`/api/groups/${id}/movies/${movieId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      });
 
-      // 2. Haetaan ryhmän jäsenet
-      const resMembers = await fetch(`/api/groups/${id}/members`);
-      if (resMembers.ok) {
-        const membersData = await resMembers.json();
-        setMembers(Array.isArray(membersData) ? membersData : []);
+      if (response.ok) {
+        setMovies((prevMovies) =>
+          prevMovies.filter((movie) => String(movie.movie_id) !== String(movieId) && String(movie.id) !== String(movieId))
+        );
+      } else {
+        const errData = await response.json();
+        console.error('Elokuvan poisto epäonnistui:', errData);
       }
-
-      // 3. Haetaan ryhmän elokuvat
-      const resMovies = await fetch(`/api/groups/${id}/movies`);
-      if (resMovies.ok) {
-        const moviesData = await resMovies.json();
-        setMovies(Array.isArray(moviesData) ? moviesData : []);
-      }
-    } catch (err) {
-      console.error('Virhe ryhmän tietojen hakemisessa:', err);
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error('Virhe elokuvaa poistettaessa:', error);
     }
-  };
+  }
 
-  // Tarkistetaan käyttäjän rooli/tila ryhmässä
-  const currentMember = members.find(m => m.user_id === currentUser?.id);
-  const isOwner = currentUser?.id && group?.owner_id === currentUser.id;
-  const isAcceptedMember = isOwner || currentMember?.status === 'accepted';
-  const isPending = currentMember?.status === 'pending';
-
-  // Lähetä liittymispyyntö
-  const handleJoinRequest = async () => {
-    if (!currentUser) return alert(texts.loginToJoin || 'Kirjaudu sisään liittyäksesi ryhmään.');
-    await fetch(`/api/groups/${id}/request`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: currentUser.id })
-    });
-    fetchGroupDetails();
-  };
-
-  // Hyväksy/Hylkää pyyntö
-  const handleHandleRequest = async (userId, action) => {
-    await fetch(`/api/groups/${id}/requests/${userId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action })
-    });
-    fetchGroupDetails();
-  };
-
-  // Poistu ryhmästä tai poista jäsen
-  const handleRemoveMember = async (userId) => {
-    await fetch(`/api/groups/${id}/members/${userId}`, { method: 'DELETE' });
-    if (userId === currentUser?.id) {
-      navigate('/ryhmat');
-    } else {
-      fetchGroupDetails();
-    }
-  };
-
-  if (loading) return <div className="container" style={{ padding: '2rem' }}>{texts.loading || 'Ladataan...'}</div>;
+  if (loading) {
+    return <div className="container"><p>Ladataan...</p></div>;
+  }
 
   return (
-    <div className="container" style={{ padding: '2rem' }}>
-      <button onClick={() => navigate(-1)} style={{ marginBottom: '1rem', cursor: 'pointer', padding: '0.4rem 0.8rem' }}>
-        &larr; {texts.back || 'Takaisin'}
-      </button>
+    <div className="container" style={{ padding: '1rem' }}>
+      <h1>{group ? group.name : `Ryhmä #${id}`}</h1>
 
-      <h1>{group?.name || `${texts.group || 'Ryhmä'} #${id}`}</h1>
+      <section className="group-movies-section" style={{ marginTop: '2rem' }}>
+        <h2>{texts?.groupMovies || 'Ryhmän elokuvat'}</h2>
 
-      {/* JOS KÄYTTÄJÄ EI OLE HYVÄKSYTTY JÄSEN */}
-      {!isAcceptedMember ? (
-        <div style={{ marginTop: '2rem', padding: '1.5rem', border: '1px solid #ccc', borderRadius: '8px' }}>
-          <p>{texts.groupOnlyForMembers || '🔒 Tämän ryhmän sisältö on vain hyväksytyille jäsenille.'}</p>
-          {isPending ? (
-            <p style={{ color: '#d97706', fontWeight: 'bold' }}>
-              {texts.pendingRequest || '⏳ Liittymispyyntösi odottaa ryhmän omistajan hyväksyntää.'}
-            </p>
-          ) : (
-            <button onClick={handleJoinRequest} style={{ padding: '0.5rem 1rem', cursor: 'pointer' }}>
-              {texts.sendJoinRequest || 'Lähetä liittymispyyntö'}
-            </button>
-          )}
-        </div>
-      ) : (
-        /* JOS KÄYTTÄJÄ ON HYVÄKSYTTY JÄSEN */
-        <div style={{ marginTop: '2rem' }}>
-          
-          {/* Ryhmän kustomoitu sisältö (Elokuvat) */}
-          <section style={{ marginBottom: '2rem' }}>
-            <h2>{texts.groupMovies || 'Ryhmän elokuvat 🎬'}</h2>
-            {movies.length > 0 ? (
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                {movies.map(movie => {
-                  const imageUrl = getPosterUrl(movie.poster_path);
+        {movies.length === 0 ? (
+          <p>Ryhmään ei ole vielä lisätty elokuvia.</p>
+        ) : (
+          <div
+            className="movies-grid"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+              gap: '1.5rem',
+              marginTop: '1rem'
+            }}
+          >
+            {movies.map((movie) => {
+              // Tarkistetaan julisteen osoite
+              const posterUrl = movie.poster_path
+                ? movie.poster_path.startsWith('http')
+                  ? movie.poster_path
+                  : `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                : null;
 
-                  return (
-                    <div key={movie.id} style={{ border: '1px solid #ddd', padding: '0.5rem', borderRadius: '6px', width: '150px' }}>
-                      {imageUrl ? (
-                        <img src={imageUrl} alt={movie.movie_title || texts.titleMissing} style={{ width: '100%', borderRadius: '4px' }} />
-                      ) : (
-                        <div style={{ width: '100%', height: '225px', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px', fontSize: '0.8rem', textAlign: 'center' }}>
-                          {texts.posterMissing || 'Juliste puuttuu'}
-                        </div>
-                      )}
-                      <p style={{ fontWeight: 'bold', fontSize: '0.9rem', marginTop: '0.5rem' }}>{movie.movie_title || texts.titleMissing}</p>
+              const targetMovieId = movie.movie_id || movie.id;
+
+              return (
+                <div
+                  key={targetMovieId}
+                  className="movie-card"
+                  style={{
+                    border: '1px solid #e0e0e0',
+                    borderRadius: '8px',
+                    padding: '0.75rem',
+                    background: '#ffffff',
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justify: 'space-between',
+                    alignItems: 'center'
+                  }}
+                >
+                  {posterUrl ? (
+                    <img
+                      src={posterUrl}
+                      alt={movie.movie_title || movie.title}
+                      style={{
+                        width: '100%',
+                        height: '225px',
+                        objectFit: 'cover',
+                        borderRadius: '4px'
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        width: '100%',
+                        height: '225px',
+                        background: '#f0f0f0',
+                        borderRadius: '4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#888',
+                        fontSize: '0.85rem'
+                      }}
+                    >
+                      Ei julistetta
                     </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <p>{texts.noGroupMovies || 'Ryhmälle ei ole vielä lisätty elokuvia.'}</p>
-            )}
-          </section>
-
-          {/* Jäsenosio & Poistuminen */}
-          <section style={{ marginBottom: '2rem' }}>
-            <h2>{texts.members || 'Jäsenet 👥'}</h2>
-            <ul style={{ listStyle: 'none', padding: 0 }}>
-              {members.filter(m => m.status === 'accepted').map(member => (
-                <li key={member.user_id} style={{ padding: '0.5rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee' }}>
-                  <span>👤 {member.username} {member.user_id === group?.owner_id && `(${texts.owner || 'Omistaja'})`}</span>
-                  
-                  {/* Omistaja voi poistaa muita, tai jäsen voi poistua itse */}
-                  {(isOwner && member.user_id !== currentUser?.id) && (
-                    <button onClick={() => handleRemoveMember(member.user_id)} style={{ color: 'red', cursor: 'pointer' }}>
-                      {texts.removeFromGroup || 'Poista ryhmästä'}
-                    </button>
                   )}
-                  {member.user_id === currentUser?.id && !isOwner && (
-                    <button onClick={() => handleRemoveMember(currentUser.id)} style={{ cursor: 'pointer' }}>
-                      {texts.leaveGroup || 'Poistu ryhmästä'}
-                    </button>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </section>
 
-          {/* Omistajan osio odottaville pyynnöille */}
-          {isOwner && (
-            <section style={{ marginTop: '2rem', padding: '1rem', backgroundColor: '#f9f9f9', borderRadius: '6px' }}>
-              <h3>{texts.pendingRequestsHeader || 'Odottavat liittymispyynnöt 📩'}</h3>
-              {members.filter(m => m.status === 'pending').length > 0 ? (
-                members.filter(m => m.status === 'pending').map(req => (
-                  <div key={req.user_id} style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '0.5rem' }}>
-                    <span>{req.username}</span>
-                    <button onClick={() => handleHandleRequest(req.user_id, 'accept')}>
-                      {texts.accept || 'Hyväksy'}
-                    </button>
-                    <button onClick={() => handleHandleRequest(req.user_id, 'reject')}>
-                      {texts.reject || 'Hylkää'}
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <p>{texts.noPendingRequests || 'Ei odottavia liittymispyyntöjä.'}</p>
-              )}
-            </section>
-          )}
-        </div>
-      )}
+                  <h3
+                    style={{
+                      fontSize: '1rem',
+                      margin: '0.75rem 0 0.5rem 0',
+                      textAlign: 'center',
+                      wordBreak: 'break-word'
+                    }}
+                  >
+                    {movie.movie_title || movie.title}
+                  </h3>
+
+                  <button
+                    onClick={() => handleDeleteMovie(targetMovieId)}
+                    style={{
+                      marginTop: 'auto',
+                      background: '#ff4d4d',
+                      color: 'white',
+                      border: 'none',
+                      padding: '0.4rem 0.8rem',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                      width: '100%'
+                    }}
+                  >
+                    {texts?.delete || 'Poista'}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
