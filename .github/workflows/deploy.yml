@@ -3,14 +3,14 @@ name: Deploy to CSC Pouta
 on:
   push:
     branches:
-      - main  # Käynnistyy automaattisesti aina kun main-haaraan pushataan
+      - groups_testing
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: SSH through GitHub Actions and Deploy
+      - name: Deploy application via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -18,5 +18,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /var/www/Web-ohjelmoinnin-sovellusprojekti
-            git pull origin main
+            git fetch origin
+            git checkout groups_testing
+            git pull origin groups_testing
             docker compose up -d --build
