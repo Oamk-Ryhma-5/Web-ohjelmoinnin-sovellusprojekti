@@ -3,7 +3,7 @@ import { pool } from '../models/db.js'
 
 const groupRouter = Router()
 
-// Hakee kaikki ryhmät
+// 1. Hakee kaikki ryhmät (Vaatimus 7 - Julkinen lista)
 groupRouter.get('/', async (_req, res, next) => {
   try {
     const result = await pool.query('SELECT * FROM groups ORDER BY id DESC')
@@ -13,7 +13,7 @@ groupRouter.get('/', async (_req, res, next) => {
   }
 })
 
-// Hakee yksittäisen ryhmän perustiedot
+// 2. Hakee yksittäisen ryhmän perustiedot
 groupRouter.get('/:id', async (req, res, next) => {
   const { id } = req.params
   try {
@@ -25,7 +25,7 @@ groupRouter.get('/:id', async (req, res, next) => {
   }
 })
 
-// Luo uuden ryhmän ja lisää luojan hyväksytyksi jäseneksi
+// 3. Luo uuden ryhmän ja lisää luojan hyväksytyksi jäseneksi
 groupRouter.post('/', async (req, res, next) => {
   const { name, owner_id } = req.body
   if (!name) return res.status(400).json({ error: 'Group name is required' })
@@ -50,12 +50,13 @@ groupRouter.post('/', async (req, res, next) => {
   }
 })
 
-// Poistaa ryhmän
+// 4. Poistaa ryhmän (Vaatimus 7 - Vain omistaja)
 groupRouter.delete('/:id', async (req, res, next) => {
   const { id } = req.params
   const userId = req.body?.user_id || req.headers['x-user-id']
 
   try {
+    // Haetaan ryhmä tietokannasta ja tarkistetaan omistaja
     const groupResult = await pool.query('SELECT owner_id FROM groups WHERE id = $1', [id])
     if (groupResult.rows.length === 0) {
       return res.status(404).json({ error: 'Group not found' })
@@ -63,6 +64,7 @@ groupRouter.delete('/:id', async (req, res, next) => {
 
     const group = groupResult.rows[0]
 
+    // Tarkistetaan, että poistaja on ryhmän omistaja
     if (userId && String(group.owner_id) !== String(userId)) {
       return res.status(403).json({ error: 'Only group owner can delete the group' })
     }
@@ -74,7 +76,7 @@ groupRouter.delete('/:id', async (req, res, next) => {
   }
 })
 
-// --- JÄSENET & LIITTYMISPYYNNÖT ---
+// --- JÄSENET & LIITTYMISPYYNNÖT (Vaatimukset 8 & 9) ---
 
 // Hakee ryhmän jäsenet ja odottavat pyynnöt
 groupRouter.get('/:id/members', async (req, res, next) => {
@@ -93,7 +95,7 @@ groupRouter.get('/:id/members', async (req, res, next) => {
   }
 })
 
-// Lähetä liittymispyyntö
+// Lähetä liittymispyyntö (Vaatimus 8)
 groupRouter.post('/:id/request', async (req, res, next) => {
   const { id } = req.params
   const { user_id } = req.body
@@ -108,10 +110,10 @@ groupRouter.post('/:id/request', async (req, res, next) => {
   }
 })
 
-// Omistaja hyväksyy tai hylkää pyynnön
+// Omistaja hyväksyy tai hylkää pyynnön (Vaatimus 8)
 groupRouter.put('/:id/requests/:userId', async (req, res, next) => {
   const { id, userId } = req.params
-  const { action } = req.body
+  const { action } = req.body // 'accept' tai 'reject'
 
   try {
     if (action === 'accept') {
@@ -132,7 +134,7 @@ groupRouter.put('/:id/requests/:userId', async (req, res, next) => {
   }
 })
 
-// Poista jäsen tai poistu ryhmästä
+// Poista jäsen tai poistu ryhmästä (Vaatimus 9)
 groupRouter.delete('/:id/members/:userId', async (req, res, next) => {
   const { id, userId } = req.params
   try {
@@ -146,7 +148,7 @@ groupRouter.delete('/:id/members/:userId', async (req, res, next) => {
   }
 })
 
-// --- RYHMÄN ELOKUVAT ---
+// --- RYHMÄN ELOKUVAT (Vaatimus 10 - Ryhmäsivun kustomointi) ---
 
 // Hakee ryhmän elokuvat
 groupRouter.get('/:id/movies', async (req, res, next) => {
