@@ -11,9 +11,10 @@ export default function GroupDetail() {
 
   const [group, setGroup] = useState(location.state?.group || null);
   const [movies, setMovies] = useState([]);
+  const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Haetaan ryhmän tiedot
+  // Haetaan ryhmän perustiedot
   useEffect(() => {
     if (!group) {
       fetch(`/api/groups/${id}`)
@@ -22,6 +23,14 @@ export default function GroupDetail() {
         .catch((err) => console.error('Virhe ryhmän tiedoin hakemisessa:', err));
     }
   }, [id, group]);
+
+  // Haetaan ryhmän jäsenet
+  useEffect(() => {
+    fetch(`/api/groups/${id}/members`)
+      .then((res) => res.json())
+      .then((data) => setMembers(Array.isArray(data) ? data : []))
+      .catch((err) => console.error('Virhe jäsenten hakemisessa:', err));
+  }, [id]);
 
   // Haetaan ryhmään lisätyt elokuvat
   useEffect(() => {
@@ -66,6 +75,32 @@ export default function GroupDetail() {
     <div className="container" style={{ padding: '1rem' }}>
       <h1>{group ? group.name : `Ryhmä #${id}`}</h1>
 
+      {/* Ryhmän jäsenet */}
+      <section className="group-members-section" style={{ marginTop: '1.5rem', background: '#f5f5f5', padding: '1rem', borderRadius: '8px' }}>
+        <h2>{texts?.members || 'Jäsenet'}</h2>
+        {members.length === 0 ? (
+          <p>Ryhmällä ei ole vielä jäseniä.</p>
+        ) : (
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+            {members.map((member) => (
+              <li
+                key={member.user_id}
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #ddd',
+                  padding: '0.4rem 0.8rem',
+                  borderRadius: '20px',
+                  fontSize: '0.9rem'
+                }}
+              >
+                👤 {member.username} {member.status === 'pending' && '(Odottaa hyväksyntää)'}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {/* Ryhmän elokuvat */}
       <section className="group-movies-section" style={{ marginTop: '2rem' }}>
         <h2>{texts?.groupMovies || 'Ryhmän elokuvat'}</h2>
 
@@ -82,7 +117,6 @@ export default function GroupDetail() {
             }}
           >
             {movies.map((movie) => {
-              // Tarkistetaan julisteen osoite
               const posterUrl = movie.poster_path
                 ? movie.poster_path.startsWith('http')
                   ? movie.poster_path

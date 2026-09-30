@@ -178,15 +178,15 @@ groupRouter.post('/:id/movies', async (req, res, next) => {
   }
 })
 
-// Poistaa elokuvan ryhmän sivulta (varmistetaan tyypinmuunnos)
+// Poistaa elokuvan ryhmän sivulta
 groupRouter.delete('/:id/movies/:movieId', async (req, res, next) => {
   const { id, movieId } = req.params
   try {
     const result = await pool.query(
       'DELETE FROM group_movies WHERE group_id = $1 AND (movie_id = $2 OR movie_id = $3)',
-      [id, movieId, Number(movieId)]
+      [id, movieId, Number(movieId) || 0]
     )
-    
+
     if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Movie not found in group' })
     }
