@@ -2,6 +2,7 @@
 -- No need to create database manually since PostgreSQL container handles this
 
 -- Tyhjennetään vanhat taulut oikeassa riippuvuusjärjestyksessä
+DROP TABLE IF EXISTS group_movies;
 DROP TABLE IF EXISTS group_members;
 DROP TABLE IF EXISTS groups;
 DROP TABLE IF EXISTS favorites;
@@ -28,9 +29,7 @@ CREATE TABLE IF NOT EXISTS app_users (
 );
 
 -- Valmis testikäyttäjä (Aito scrypt-tiiviste)
--- Kirjautumistiedot:
--- Sähköposti: test@user.com
--- Salasana: Testi123!
+-- Kirjautumistiedot: test@user.com / Testi123!
 INSERT INTO app_users (username, email, password_hash) 
 VALUES (
     'TestUser', 
@@ -66,11 +65,28 @@ CREATE TABLE IF NOT EXISTS groups (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Ryhmän jäsenet
+-- Ryhmän jäsenet ja liittymispyynnöt (Vaatimukset 8 & 9)
 CREATE TABLE IF NOT EXISTS group_members (
     id SERIAL PRIMARY KEY,
     group_id INT NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
     user_id INT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending', -- 'pending' tai 'accepted'
     joined_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(group_id, user_id)
 );
+
+-- Ryhmän elokuvat / kustomointi (Vaatimus 10)
+CREATE TABLE IF NOT EXISTS group_movies (
+    id SERIAL PRIMARY KEY,
+    group_id INT NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    movie_id VARCHAR(100) NOT NULL,
+    movie_title VARCHAR(255) NOT NULL,
+    poster_path VARCHAR(255),
+    added_by INT REFERENCES app_users(id) ON DELETE SET NULL,
+    added_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(group_id, movie_id)
+);
+
+-- Esimerkkiryhmä ja omistajan automaattinen jäsenyys
+INSERT INTO groups (id, name, owner_id) VALUES (1, 'Sci-Fi Leffakerho', 1) ON CONFLICT DO NOTHING;
+INSERT INTO group_members (group_id, user_id, status) VALUES (1, 1, 'accepted') ON CONFLICT DO NOTHING;
