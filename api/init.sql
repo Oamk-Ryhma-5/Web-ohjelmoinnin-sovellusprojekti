@@ -2,6 +2,8 @@
 -- No need to create database manually since PostgreSQL container handles this
 
 -- Tyhjennetään vanhat taulut oikeassa riippuvuusjärjestyksessä
+DROP TABLE IF EXISTS group_members;
+DROP TABLE IF EXISTS groups;
 DROP TABLE IF EXISTS favorites;
 DROP TABLE IF EXISTS app_sessions;
 DROP TABLE IF EXISTS app_users;
@@ -25,6 +27,17 @@ CREATE TABLE IF NOT EXISTS app_users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Valmis testikäyttäjä (Aito scrypt-tiiviste)
+-- Kirjautumistiedot:
+-- Sähköposti: test@user.com
+-- Salasana: Testi123!
+INSERT INTO app_users (username, email, password_hash) 
+VALUES (
+    'TestUser', 
+    'test@user.com', 
+    'scrypt$318a22a290c2c5019de2aceb67a52218$77d79a484aaf9abb57c7ee4a3d630b411c2eb18218bd8c267747c464b7066a85e841472fe60777c2fa4b49397e3a001cfdc1161e3d755600e83a97f28fc0569f'
+) ON CONFLICT (email) DO NOTHING;
+
 -- Sessiot
 CREATE TABLE IF NOT EXISTS app_sessions (
     id SERIAL PRIMARY KEY,
@@ -43,4 +56,21 @@ CREATE TABLE IF NOT EXISTS favorites (
     poster_path VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(account_id, movie_id)
+);
+
+-- Ryhmät
+CREATE TABLE IF NOT EXISTS groups (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    owner_id INT REFERENCES app_users(id) ON DELETE SET NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Ryhmän jäsenet
+CREATE TABLE IF NOT EXISTS group_members (
+    id SERIAL PRIMARY KEY,
+    group_id INT NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    user_id INT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+    joined_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(group_id, user_id)
 );

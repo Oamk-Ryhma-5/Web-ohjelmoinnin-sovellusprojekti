@@ -8,46 +8,59 @@ export default function Groups() {
   const { user } = useUser();
   const [query, setQuery] = useState(''); //pitää kirjaa kenttään kirjoitetusta tekstistä
   
-  // Luetaan ryhmät localStoragesta tai käytetään oletusryhmiä
-  const [groups, setGroups] = useState(() => {
-    const saved = localStorage.getItem('app_groups');
-    return saved ? JSON.parse(saved) : [
-      { id: 1, name: 'Sci-Fi Leffakerho' },
-      { id: 2, name: 'Kauhuelokuvien ystävät' } //kovakoodattuja esimerkkejä ryhmistä.
-    ];
-  });
-
+  const [groups, setGroups] = useState([]); //ryhmät haetaan tietokannasta
   const [newGroupName, setNewGroupName] = useState('');  //tallentaa uuden ryhmän nimen
   const navigate = useNavigate(); //hookki joka ohjaa käyttäjän eteenpäin hakusivulle
 
-  // Tallennetaan ryhmät aina kun 'groups'-tila muuttuu
+  // Haetaan ryhmät tietokannasta sivun latautuessa
   useEffect(() => {
-    localStorage.setItem('app_groups', JSON.stringify(groups));
-  }, [groups]);
+    fetch('/api/groups')
+      .then(res => res.json())
+      .then(data => setGroups(Array.isArray(data) ? data : []))
+      .catch(err => console.error('Virhe ryhmien hakemisessa:', err));
+  }, []);
 
   function search(event) {
     event.preventDefault();  //tämä estää sivun uudelleenlatautumisen
     navigate(`/haku?q=${encodeURIComponent(query.trim())}`);
   }
 
-  function handleCreateGroup(event) { //lisää ryhmän listaan jos nimi ei ole tyhjä samalla luodaan tunniste 
+  async function handleCreateGroup(event) { //lisää ryhmän tietokantaan jos nimi ei ole tyhjä 
     event.preventDefault();
     if (!newGroupName.trim()) return;
 
-    const newGroup = {
-      id: Date.now(), //tämä luo yllä mainitun tunnisteen aikaleiman mukaan
-      name: newGroupName.trim()
-    };
+    try {
+      const response = await fetch('/api/groups', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          name: newGroupName.trim(),
+          owner_id: user?.id || null
+        })
+      });
 
-    setGroups([...groups, newGroup]);
-    setNewGroupName('');
+      if (response.ok) {
+        const createdGroup = await response.json(); //tietokannan luoma ryhmä id:n kanssa
+        setGroups([createdGroup, ...groups]);
+        setNewGroupName('');
 
-    // Ohjataan käyttäjä suoraan uuden ryhmän sivulle ja välitetään ryhmän tiedot statessa
-    navigate(`/ryhma/${newGroup.id}`, { state: { group: newGroup } });
+        // Ohjataan käyttäjä suoraan uuden ryhmän sivulle ja välitetään ryhmän tiedot statessa
+        navigate(`/ryhma/${createdGroup.id}`, { state: { group: createdGroup } });
+      }
+    } catch (error) {
+      console.error('Ryhmän luonti epäonnistui:', error);
+    }
   }
 
-  function handleDeleteGroup(id) { //täällä poistetaan ryhmä idn perusteella
-    setGroups(groups.filter(group => group.id !== id));
+  async function handleDeleteGroup(id) { //täällä poistetaan ryhmä idn perusteella
+    try {
+      const response = await fetch(`/api/groups/${id}`, { method: 'DELETE' });
+      if (response.ok) {
+        setGroups(groups.filter(group => group.id !== id));
+      }
+    } catch (error) {
+      console.error('Ryhmän poisto epäonnistui:', error);
+    }
   }
 
   return (
