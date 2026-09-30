@@ -20,30 +20,36 @@ export default function App() {
       '/suosikit': texts.favorites,
       '/ryhmat': texts.groups || 'Ryhmät'
     }
-    
+
+      // GIT action testi
+      < div style = {{ padding: '10px', backgroundColor: '#4CAF50', color: 'white', textAlign: 'center' }
+  }>
+  🚀 Automaattinen päivitys GitHub Actionsin kautta toimii!(Versio 1.0)
+</div >
+
     // Tarkistetaan onko kyseessä yksittäinen ryhmäsivu (/ryhma/:id)
     const currentTitle = pathname.startsWith('/ryhma/')
-      ? `${texts.groups || 'Ryhmä'} #${pathname.split('/')[2]}`
-      : titles[pathname] || texts.notFound
+    ? `${texts.groups || 'Ryhmä'} #${pathname.split('/')[2]}`
+    : titles[pathname] || texts.notFound
 
-    document.title = `Leffahaku · ${currentTitle}`
-  }, [pathname, texts])
+  document.title = `Leffahaku · ${currentTitle}`
+}, [pathname, texts])
 
-  useEffect(() => {
-    window.scrollTo(0, 0)
-    document.getElementById('main')?.focus({ preventScroll: true })
-  }, [pathname])
+useEffect(() => {
+  window.scrollTo(0, 0)
+  document.getElementById('main')?.focus({ preventScroll: true })
+}, [pathname])
 
-  return (
-    <div className="app">
-      <a className="skip-link" href="#main">
-        {texts.skip}
-      </a>
-      <Header />
-      <main id="main" className="main-content" tabIndex={-1}>
-        <Outlet />
-      </main>
-      <Footer />
-    </div>
-  )
+return (
+  <div className="app">
+    <a className="skip-link" href="#main">
+      {texts.skip}
+    </a>
+    <Header />
+    <main id="main" className="main-content" tabIndex={-1}>
+      <Outlet />
+    </main>
+    <Footer />
+  </div>
+)
 }
