@@ -3,6 +3,7 @@ name: Deploy to CSC Pouta
 on:
   push:
     branches:
+    # - main
       - groups_testing
 
 jobs:
