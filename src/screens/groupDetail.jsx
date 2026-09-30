@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/useLanguage.js';
+import { useUser } from '../context/useUser.js';
 
-export default function GroupDetail({ currentUser }) {
+export default function GroupDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { texts } = useLanguage();
+  const { user: currentUser } = useUser(); // Noudetaan kirjautunut käyttäjä suoraan contextista
 
   const [group, setGroup] = useState(location.state?.group || null);
   const [members, setMembers] = useState([]);
