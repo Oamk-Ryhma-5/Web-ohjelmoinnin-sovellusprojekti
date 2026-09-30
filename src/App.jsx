@@ -36,9 +36,9 @@ export default function App() {
 
   return (
     <div className="app">
-      {/* TÄSSÄ SE ON OIKEALLA PAIKALLAAN: */}
+      {/* TÄSSÄ GITHUB ACTIONS : */}
       <div style={{ padding: '10px', backgroundColor: '#4CAF50', color: 'white', textAlign: 'center' }}>
-        🚀 Automaattinen päivitys GitHub Actionsin kautta toimii! (Versio 1.0)
+        Automaattinen päivitys GitHub Actionsin kautta toimii! (Versio 1.0)
       </div>
 
       <a className="skip-link" href="#main">
