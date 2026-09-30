@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react'; //tässä tuodaan reactin perustoimintoja
+import { useNavigate, Link } from 'react-router-dom'; //reititystyökalu + Link-komponentti
 import { useLanguage } from '../context/useLanguage.js';
 import { useUser } from '../context/useUser.js';
 
 export default function Groups() {
   const { texts } = useLanguage();
   const { user } = useUser();
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(''); //pitää kirjaa kenttään kirjoitetusta tekstistä
   
-  // Luetaan ryhmät localStoragesta (tai käytetään oletusryhmiä)
+  // Luetaan ryhmät localStoragesta tai käytetään oletusryhmiä
   const [groups, setGroups] = useState(() => {
     const saved = localStorage.getItem('app_groups');
     return saved ? JSON.parse(saved) : [
       { id: 1, name: 'Sci-Fi Leffakerho' },
-      { id: 2, name: 'Kauhuelokuvien ystävät' }
+      { id: 2, name: 'Kauhuelokuvien ystävät' } //kovakoodattuja esimerkkejä ryhmistä.
     ];
   });
 
-  const [newGroupName, setNewGroupName] = useState('');
-  const navigate = useNavigate();
+  const [newGroupName, setNewGroupName] = useState('');  //tallentaa uuden ryhmän nimen
+  const navigate = useNavigate(); //hookki joka ohjaa käyttäjän eteenpäin hakusivulle
 
   // Tallennetaan ryhmät aina kun 'groups'-tila muuttuu
   useEffect(() => {
@@ -26,28 +26,27 @@ export default function Groups() {
   }, [groups]);
 
   function search(event) {
-    event.preventDefault();
+    event.preventDefault();  //tämä estää sivun uudelleenlatautumisen
     navigate(`/haku?q=${encodeURIComponent(query.trim())}`);
   }
 
-  function handleCreateGroup(event) {
+  function handleCreateGroup(event) { //lisää ryhmän listaan jos nimi ei ole tyhjä samalla luodaan tunniste 
     event.preventDefault();
     if (!newGroupName.trim()) return;
 
     const newGroup = {
-      id: Date.now(),
+      id: Date.now(), //tämä luo yllä mainitun tunnisteen aikaleiman mukaan
       name: newGroupName.trim()
     };
 
-    const updatedGroups = [...groups, newGroup];
-    setGroups(updatedGroups);
+    setGroups([...groups, newGroup]);
     setNewGroupName('');
 
-    // Ohjataan uuteen ryhmään
+    // Ohjataan käyttäjä suoraan uuden ryhmän sivulle ja välitetään ryhmän tiedot statessa
     navigate(`/ryhma/${newGroup.id}`, { state: { group: newGroup } });
   }
 
-  function handleDeleteGroup(id) {
+  function handleDeleteGroup(id) { //täällä poistetaan ryhmä idn perusteella
     setGroups(groups.filter(group => group.id !== id));
   }
 
@@ -74,7 +73,7 @@ export default function Groups() {
       <section className="groups-section" style={{ marginTop: '2rem', padding: '1rem' }}>
         <h2>{texts.groups || 'Ryhmät'}</h2>
 
-        {user ? (
+        {user ? ( /* tarkistaa onko käyttäjä kirjautunut sisään jos on näyttää lomakkeen ryhmän luomiseen jos ei kehoitus kirjautumiseen */
           <div className="logged-in-content">
             <form onSubmit={handleCreateGroup} style={{ marginBottom: '1rem' }}>
               <input
