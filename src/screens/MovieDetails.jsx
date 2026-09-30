@@ -4,7 +4,7 @@ import { api, addFavoriteApi, errorMessage } from '../api.js'
 import { useLanguage } from '../context/useLanguage.js'
 import { useUser } from '../context/useUser.js'
 
-import AddToGroupModel from '../components/addToGroupModel.jsx'
+import AddToGroupModel from '../components/AddToGroupModel.jsx'
 
 export default function MovieDetails() {
   const { id } = useParams()

@@ -54,7 +54,11 @@ export default function Groups() {
 
   async function handleDeleteGroup(id) { //täällä poistetaan ryhmä idn perusteella
     try {
-      const response = await fetch(`/api/groups/${id}`, { method: 'DELETE' });
+      const response = await fetch(`/api/groups/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user?.id })
+      });
       if (response.ok) {
         setGroups(groups.filter(group => group.id !== id));
       }
@@ -105,22 +109,28 @@ export default function Groups() {
 
         {/* ryhmälista */}
         <ul style={{ listStyle: 'none', padding: 0, marginTop: '1rem' }}>
-          {groups.map(group => (
-            <li key={group.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', padding: '0.5rem', background: '#f9f9f9' }}>
-              <Link 
-                to={`/ryhma/${group.id}`} 
-                state={{ group }} 
-                style={{ textDecoration: 'none', color: '#0066cc', fontWeight: 'bold' }}
-              >
-                {group.name}
-              </Link>
-              {user && (
-                <button onClick={() => handleDeleteGroup(group.id)} style={{ background: '#ff4d4d', color: 'white', border: 'none', padding: '0.3rem 0.6rem', cursor: 'pointer' }}>
-                  {texts.delete || 'Poista'}
-                </button>
-              )}
-            </li>
-          ))}
+          {groups.map(group => {
+            // Tarkistetaan onko kirjautunut käyttäjä tämän ryhmän omistaja
+            const isOwner = user && String(user.id) === String(group.owner_id);
+
+            return (
+              <li key={group.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', padding: '0.5rem', background: '#f9f9f9' }}>
+                <Link 
+                  to={`/ryhma/${group.id}`} 
+                  state={{ group }} 
+                  style={{ textDecoration: 'none', color: '#0066cc', fontWeight: 'bold' }}
+                >
+                  {group.name}
+                </Link>
+                {/* Poistonappi näytetään VAIN omistajalle */}
+                {isOwner && (
+                  <button onClick={() => handleDeleteGroup(group.id)} style={{ background: '#ff4d4d', color: 'white', border: 'none', padding: '0.3rem 0.6rem', cursor: 'pointer' }}>
+                    {texts.delete || 'Poista'}
+                  </button>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </section>
     </div>
