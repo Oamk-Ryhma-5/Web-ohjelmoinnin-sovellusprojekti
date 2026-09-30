@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom' // ✅ OIKEIN
+import { useParams } from 'react-router-dom'
 import { api, addFavoriteApi, errorMessage } from '../api.js'
 import { useLanguage } from '../context/useLanguage.js'
 import { useUser } from '../context/useUser.js'
+
+// Korjattu isompi alkukirjain ja tiedoston nimi
+import AddToGroupModal from '../components/AddToGroupModal.jsx'
 
 export default function MovieDetails() {
   const { id } = useParams()
@@ -83,12 +86,18 @@ export default function MovieDetails() {
           {movie.overview || texts.descriptionMissing}
         </p>
 
+        {/* Näytetään toiminnot (Suosikki & Ryhmään lisääminen) kirjautuneelle käyttäjälle */}
         {user && (
-          <div style={{ marginTop: '20px' }}>
-            <button className="button" onClick={handleAddFavorite}>
-              ❤️ {texts.addToFavorites}
-            </button>
-            {favoriteStatus && <p style={{ marginTop: '8px' }}>{favoriteStatus}</p>}
+          <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div>
+              <button className="button" onClick={handleAddFavorite}>
+                ❤️ {texts.addToFavorites}
+              </button>
+              {favoriteStatus && <p style={{ marginTop: '8px' }}>{favoriteStatus}</p>}
+            </div>
+
+            {/* Nappi ryhmään lisäämiselle */}
+            <AddToGroupModal movie={movie} />
           </div>
         )}
       </div>
