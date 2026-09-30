@@ -19,8 +19,8 @@ jobs:
           script: |
             cd /var/www/Web-ohjelmoinnin-sovellusprojekti
             git fetch origin
-            git checkout groups_testing
-            git pull origin groups_testing
+            git checkout main
+            git pull origin main
             
             # Viedään GitHub Run Number muuttujaksi Docker-buildia varten
             export VITE_APP_VERSION=${{ github.run_number }}
