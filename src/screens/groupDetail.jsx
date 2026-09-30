@@ -15,6 +15,15 @@ export default function GroupDetail() {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Apufunktio kuvan URL-osoitteen tarkistukseen ja muodostamiseen
+  function getPosterUrl(posterPath) {
+    if (!posterPath) return null;
+    if (posterPath.startsWith('http://') || posterPath.startsWith('https://')) {
+      return posterPath;
+    }
+    return `https://image.tmdb.org/t/p/w200${posterPath.startsWith('/') ? '' : '/'}${posterPath}`;
+  }
+
   useEffect(() => {
     fetchGroupDetails();
   }, [id]);
@@ -120,14 +129,22 @@ export default function GroupDetail() {
             <h2>{texts.groupMovies || 'Ryhmän elokuvat 🎬'}</h2>
             {movies.length > 0 ? (
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                {movies.map(movie => (
-                  <div key={movie.id} style={{ border: '1px solid #ddd', padding: '0.5rem', borderRadius: '6px', width: '150px' }}>
-                    {movie.poster_path && (
-                      <img src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`} alt={movie.movie_title} style={{ width: '100%' }} />
-                    )}
-                    <p style={{ fontWeight: 'bold', fontSize: '0.9rem', marginTop: '0.5rem' }}>{movie.movie_title}</p>
-                  </div>
-                ))}
+                {movies.map(movie => {
+                  const imageUrl = getPosterUrl(movie.poster_path);
+
+                  return (
+                    <div key={movie.id} style={{ border: '1px solid #ddd', padding: '0.5rem', borderRadius: '6px', width: '150px' }}>
+                      {imageUrl ? (
+                        <img src={imageUrl} alt={movie.movie_title || texts.titleMissing} style={{ width: '100%', borderRadius: '4px' }} />
+                      ) : (
+                        <div style={{ width: '100%', height: '225px', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px', fontSize: '0.8rem', textAlign: 'center' }}>
+                          {texts.posterMissing || 'Juliste puuttuu'}
+                        </div>
+                      )}
+                      <p style={{ fontWeight: 'bold', fontSize: '0.9rem', marginTop: '0.5rem' }}>{movie.movie_title || texts.titleMissing}</p>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <p>{texts.noGroupMovies || 'Ryhmälle ei ole vielä lisätty elokuvia.'}</p>

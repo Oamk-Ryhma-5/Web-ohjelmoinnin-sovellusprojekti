@@ -30,9 +30,12 @@ export default function AddToGroupModel({ movie }) {
   const handleAddMovie = async () => {
     if (!selectedGroupId || !movie) return;
 
-    let poster = movie.poster_path || movie.posterUrl || '';
-    if (poster.startsWith('https://image.tmdb.org/t/p/')) {
-      poster = poster.replace(/^https:\/\/image\.tmdb\.org\/t\/p\/[^\/]+/, '');
+    // Varmistetaan että saadaan poster-polku riippumatta kentän nimestä
+    let rawPoster = movie.poster_path || movie.posterUrl || '';
+    
+    // Jos kyseessä on täysi URL, siistitään se pelkäksi suhteelliseksi poluksi
+    if (rawPoster.startsWith('https://image.tmdb.org/t/p/')) {
+      rawPoster = rawPoster.replace(/^https:\/\/image\.tmdb\.org\/t\/p\/[^\/]+/, '');
     }
 
     try {
@@ -42,7 +45,7 @@ export default function AddToGroupModel({ movie }) {
         body: JSON.stringify({
           movie_id: String(movie.id),
           movie_title: movie.title || movie.name || texts.titleMissing,
-          poster_path: poster,
+          poster_path: rawPoster,
           added_by: user.id,
         }),
       });
