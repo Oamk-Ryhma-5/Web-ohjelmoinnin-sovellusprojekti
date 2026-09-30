@@ -17,6 +17,10 @@ FROM node:24
 # Set the working directory inside the container
 WORKDIR /app
 
+# Vastaanotetaan versionumero build-argumenttina
+ARG VITE_APP_VERSION
+ENV VITE_APP_VERSION=$VITE_APP_VERSION
+
 # Copy package.json and package-lock.json (if available)
 COPY package*.json ./
 
