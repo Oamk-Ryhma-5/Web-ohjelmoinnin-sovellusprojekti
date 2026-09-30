@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom' // ✅ OIKEIN
+import { useParams } from 'react-router-dom'
 import { api, addFavoriteApi, errorMessage } from '../api.js'
 import { useLanguage } from '../context/useLanguage.js'
 import { useUser } from '../context/useUser.js'
+
+import AddToGroupModel from '../components/AddToGroupModel.jsx'
 
 export default function MovieDetails() {
   const { id } = useParams()
@@ -29,7 +31,7 @@ export default function MovieDetails() {
   const handleAddFavorite = async () => {
     try {
       setFavoriteStatus(texts.loading)
-      
+
       let poster = movie.posterUrl || movie.poster_path || ''
       if (poster.startsWith('https://image.tmdb.org/t/p/')) {
         poster = poster.replace(/^https:\/\/image\.tmdb\.org\/t\/p\/[^\/]+/, '')
@@ -83,12 +85,18 @@ export default function MovieDetails() {
           {movie.overview || texts.descriptionMissing}
         </p>
 
+        {/* Näytetään toiminnot (Suosikki & Ryhmään lisääminen) kirjautuneelle käyttäjälle */}
         {user && (
-          <div style={{ marginTop: '20px' }}>
-            <button className="button" onClick={handleAddFavorite}>
-              ❤️ {texts.addToFavorites}
-            </button>
-            {favoriteStatus && <p style={{ marginTop: '8px' }}>{favoriteStatus}</p>}
+          <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div>
+              <button className="button" onClick={handleAddFavorite}>
+                ❤️ {texts.addToFavorites}
+              </button>
+              {favoriteStatus && <p style={{ marginTop: '8px' }}>{favoriteStatus}</p>}
+            </div>
+
+            {/* Nappi ryhmään lisäämiselle */}
+            <AddToGroupModel movie={movie} />
           </div>
         )}
       </div>

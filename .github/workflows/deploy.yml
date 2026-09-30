@@ -3,7 +3,7 @@ name: Deploy to CSC Pouta
 on:
   push:
     branches:
-      - main
+    - main
 
 jobs:
   deploy:
@@ -18,8 +18,11 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /var/www/Web-ohjelmoinnin-sovellusprojekti
-
-            git fetch origin main
-            git reset --hard origin/main
+            git fetch origin
+            git checkout groups_testing
+            git pull origin groups_testing
+            
+            # Viedään GitHub Run Number muuttujaksi Docker-buildia varten
             export VITE_APP_VERSION=${{ github.run_number }}
+            
             docker compose up -d --build
