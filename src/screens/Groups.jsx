@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react'; //tässä tuodaan reactin perustoimintoja
-import { useNavigate, Link } from 'react-router-dom'; //reititystyökalu + Link-komponentti
+import React, { useState, useEffect } from 'react'; // tuodaan reactin perustoimintoja
+import { useNavigate, Link } from 'react-router-dom'; // reititystyökalu + Link-komponentti
 import { useLanguage } from '../context/useLanguage.js';
 import { useUser } from '../context/useUser.js';
 
 export default function Groups() {
   const { texts } = useLanguage();
   const { user } = useUser();
-  const [query, setQuery] = useState(''); //pitää kirjaa kenttään kirjoitetusta tekstistä
+  const [query, setQuery] = useState(''); // pitää kirjaa kenttään kirjoitetusta tekstistä
   
-  const [groups, setGroups] = useState([]); //ryhmät haetaan tietokannasta
-  const [newGroupName, setNewGroupName] = useState('');  //tallentaa uuden ryhmän nimen
-  const navigate = useNavigate(); //hookki joka ohjaa käyttäjän eteenpäin hakusivulle
+  const [groups, setGroups] = useState([]); // ryhmät haetaan tietokannasta
+  const [newGroupName, setNewGroupName] = useState('');  // tallentaa uuden ryhmän nimen
+  const navigate = useNavigate(); // hookki joka ohjaa käyttäjän eteenpäin hakusivulle
 
   // Haetaan ryhmät tietokannasta sivun latautuessa
   useEffect(() => {
@@ -21,11 +21,11 @@ export default function Groups() {
   }, []);
 
   function search(event) {
-    event.preventDefault();  //tämä estää sivun uudelleenlatautumisen
+    event.preventDefault();  // estää sivun uudelleenlatautumisen
     navigate(`/haku?q=${encodeURIComponent(query.trim())}`);
   }
 
-  async function handleCreateGroup(event) { //lisää ryhmän tietokantaan jos nimi ei ole tyhjä 
+  async function handleCreateGroup(event) { // lisää ryhmän tietokantaan jos nimi ei ole tyhjä 
     event.preventDefault();
     if (!newGroupName.trim()) return;
 
@@ -40,7 +40,7 @@ export default function Groups() {
       });
 
       if (response.ok) {
-        const createdGroup = await response.json(); //tietokannan luoma ryhmä id:n kanssa
+        const createdGroup = await response.json(); // tietokannan luoma ryhmä id:n kanssa
         setGroups([createdGroup, ...groups]);
         setNewGroupName('');
 
@@ -52,7 +52,7 @@ export default function Groups() {
     }
   }
 
-  async function handleDeleteGroup(id) { //täällä poistetaan ryhmä idn perusteella
+  async function handleDeleteGroup(id) { // poistetaan ryhmä id:n perusteella
     try {
       const response = await fetch(`/api/groups/${id}`, {
         method: 'DELETE',
@@ -90,7 +90,7 @@ export default function Groups() {
       <section className="groups-section" style={{ marginTop: '2rem', padding: '1rem' }}>
         <h2>{texts.groups || 'Ryhmät'}</h2>
 
-        {user ? ( /* tarkistaa onko käyttäjä kirjautunut sisään jos on näyttää lomakkeen ryhmän luomiseen jos ei kehoitus kirjautumiseen */
+        {user ? ( /* tarkistaa onko käyttäjä kirjautunut sisään. Jos on, näyttää lomakkeen ryhmän luomiseen, muuten kehotuksen kirjautua */
           <div className="logged-in-content">
             <form onSubmit={handleCreateGroup} style={{ marginBottom: '1rem' }}>
               <input
@@ -107,7 +107,7 @@ export default function Groups() {
           <p>{texts.loginToCreateGroups || 'Kirjaudu sisään luodaksesi ryhmiä.'}</p>
         )}
 
-        {/* ryhmälista */}
+        {/* Ryhmälista */}
         <ul style={{ listStyle: 'none', padding: 0, marginTop: '1rem' }}>
           {groups.map(group => {
             // Tarkistetaan onko kirjautunut käyttäjä tämän ryhmän omistaja
