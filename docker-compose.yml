@@ -48,7 +48,7 @@ services:
   frontend:
     build: .
     ports:
-      - "${FRONTEND_EXPOSED_PORT:-5173}:${FRONTEND_PORT:-5173}"
+      - "80:${FRONTEND_PORT:-5173}"
     volumes:
       - .:/app
       - /app/node_modules
