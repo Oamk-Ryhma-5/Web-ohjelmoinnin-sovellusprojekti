@@ -8,7 +8,7 @@ import AddToGroupModel from '../components/AddToGroupModel.jsx'
 
 export default function MovieDetails() {
   const { id } = useParams()
-  const { locale, texts } = useLanguage() 
+  const { locale, texts } = useLanguage()
   const { user } = useUser()
   const [movie, setMovie] = useState(null)
   const [favoriteStatus, setFavoriteStatus] = useState('')
@@ -31,7 +31,7 @@ export default function MovieDetails() {
   const handleAddFavorite = async () => {
     try {
       setFavoriteStatus(texts.loading)
-      
+
       let poster = movie.posterUrl || movie.poster_path || ''
       if (poster.startsWith('https://image.tmdb.org/t/p/')) {
         poster = poster.replace(/^https:\/\/image\.tmdb\.org\/t\/p\/[^\/]+/, '')
