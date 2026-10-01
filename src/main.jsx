@@ -7,6 +7,7 @@ import Home from './screens/Home.jsx'
 import Search from './screens/Search.jsx'
 import Authentication from './screens/Authentication.jsx'
 import Groups from './screens/Groups.jsx'
+import Reviews from './screens/Reviews.jsx'
 import GroupDetail from './screens/groupDetail.jsx' // Lisätty yksittäisen ryhmäsivun tuonti
 import Account from './screens/Account.jsx'
 import About from './screens/About.jsx'
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
       { path: 'kirjaudu', element: <Authentication key="login" mode="login" /> },
       { path: 'rekisteroidy', element: <Authentication key="register" mode="register" /> },
       { path: 'groups', element: <Groups /> },
+      { path: 'reviews', element: <Reviews /> },
       { path: 'ryhma/:id', element: <GroupDetail /> }, // Lisätty dynaaminen reitti yksittäiselle ryhmälle
       
       // Suojatut reitit (vaativat kirjautumisen)
