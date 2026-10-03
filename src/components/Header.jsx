@@ -28,40 +28,21 @@ export default function Header() {
         </nav>
         
         <div className="header-actions">
-          <div className="language-buttons" role="group" aria-label={texts.language}>
-            <button
-              lang="fi"
-              aria-label="Suomi"
-              aria-pressed={language === 'fi'}
-              onClick={() => setLanguage('fi')}
+          {/* Kielivalinta alasvetovalikkona */}
+          <div className="language-select-wrapper">
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              aria-label={texts.language || 'Kieli'}
+              className="language-select"
             >
-              FI
-            </button>
-            <button
-              lang="en"
-              aria-label="English"
-              aria-pressed={language === 'en'}
-              onClick={() => setLanguage('en')}
-            >
-              EN
-            </button>
-            <button
-              lang="sv"
-              aria-label="Svenska"
-              aria-pressed={language === 'sv'}
-              onClick={() => setLanguage('sv')}
-            >
-              SV
-            </button>
-            <button
-              lang="tlh"
-              aria-label="tlhIngan Hol"
-              aria-pressed={language === 'tlh'}
-              onClick={() => setLanguage('tlh')}
-            >
-              TLH
-            </button>
+              <option value="fi">FI</option>
+              <option value="en">EN</option>
+              <option value="sv">SV</option>
+              <option value="tlh">TLH</option>
+            </select>
           </div>
+
           <ThemeSelect />
           {!loading &&
             (user ? (
