@@ -102,18 +102,22 @@ export default function GroupDetail() {
     }
   }
 
-  // Elokuvan poistaminen ryhmästä
+  // Elokuvan poistaminen ryhmästä (lähetetään mukana user_id turvatarkistusta varten)
   async function handleDeleteMovie(movieId) {
     try {
       const response = await fetch(`/api/groups/${id}/movies/${movieId}`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user?.id })
       });
 
       if (response.ok) {
         setMovies((prevMovies) =>
           prevMovies.filter((movie) => String(movie.movie_id) !== String(movieId) && String(movie.id) !== String(movieId))
         );
+      } else {
+        const errData = await response.json();
+        alert(errData.error || 'Elokuvan poisto epäonnistui.');
       }
     } catch (error) {
       console.error('Virhe elokuvaa poistettaessa:', error);
@@ -125,6 +129,9 @@ export default function GroupDetail() {
   }
 
   const userMembership = members.find((m) => user && String(m.user_id) === String(user.id));
+  
+  // Onko käyttäjä ryhmän hyväksytty jäsen tai omistaja
+  const isAcceptedMember = user && (isOwner || (userMembership && userMembership.status === 'accepted'));
 
   return (
     <div className="container" style={{ padding: '1rem' }}>
@@ -144,11 +151,15 @@ export default function GroupDetail() {
         <p style={{ fontStyle: 'italic', color: '#666' }}>Liittymispyyntö odottaa omistajan hyväksyntää.</p>
       )}
 
-      {/* Ryhmän jäsenet */}
+      {/* Ryhmän jäsenet - Näkyy vain kirjautuneille jäsenille / omistajalle */}
       <section className="group-members-section" style={{ marginTop: '1.5rem', background: '#f5f5f5', padding: '1rem', borderRadius: '8px' }}>
         <h2>{texts?.members || 'Jäsenet'}</h2>
         
-        {members.filter(m => m.status === 'accepted').length === 0 ? (
+        {!user ? (
+          <p>Kirjaudu sisään ja liity ryhmään nähdäksesi ryhmän jäsenet.</p>
+        ) : !isAcceptedMember ? (
+          <p>Sinun täytyy olla hyväksytty ryhmän jäsen nähdäksesi muut jäsenet.</p>
+        ) : members.filter(m => m.status === 'accepted').length === 0 ? (
           <p>Ryhmällä ei ole vielä hyväksyttyjä jäseniä.</p>
         ) : (
           <ul style={{ listStyle: 'none', padding: 0, margin: '0.5rem 0 1rem 0', display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -225,7 +236,6 @@ export default function GroupDetail() {
             }}
           >
             {movies.map((movie) => {
-              // Muodostetaan TMDB julistekuva-osoite oikein
               const posterUrl = movie.poster_path
                 ? movie.poster_path.startsWith('http')
                   ? movie.poster_path
@@ -246,7 +256,7 @@ export default function GroupDetail() {
                     boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
                     display: 'flex',
                     flexDirection: 'column',
-                    justify: 'space-between',
+                    justifyContent: 'space-between',
                     alignItems: 'center'
                   }}
                 >
@@ -290,23 +300,25 @@ export default function GroupDetail() {
                     {movie.movie_title || movie.title}
                   </h3>
 
-                  {/* Poista elokuva -painike */}
-                  <button
-                    onClick={() => handleDeleteMovie(targetMovieId)}
-                    style={{
-                      marginTop: 'auto',
-                      background: '#ff4d4d',
-                      color: 'white',
-                      border: 'none',
-                      padding: '0.4rem 0.8rem',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontWeight: 'bold',
-                      width: '100%'
-                    }}
-                  >
-                    {texts?.delete || 'Poista'}
-                  </button>
+                  {/* Poista elokuva -painike näytetään VAIN ryhmän hyväksytylle jäsenelle tai omistajalle */}
+                  {isAcceptedMember && (
+                    <button
+                      onClick={() => handleDeleteMovie(targetMovieId)}
+                      style={{
+                        marginTop: 'auto',
+                        background: '#ff4d4d',
+                        color: 'white',
+                        border: 'none',
+                        padding: '0.4rem 0.8rem',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        width: '100%'
+                      }}
+                    >
+                      {texts?.delete || 'Poista'}
+                    </button>
+                  )}
                 </div>
               );
             })}
