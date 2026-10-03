@@ -68,5 +68,21 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  adminer:
+    image: adminer:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+
 volumes:
   postgres_data:
+
+# Miten kirjaudut Admineriin?
+# Kun avaat `http://<palvelimen-ip>:8080` selaimessasi, näytölle avautuu kirjautumissivu:
+# Järjestelmä (System):** Valitse pudotusvalikosta `PostgreSQL`.
+# Palvelin (Server):** Kirjoita `database` (koska Docker-verkon sisällä palveluiden nimet toimivat host-osoitteina).
+#Käyttäjä (Username):** Sama kuin `.env`-tiedostossa
+# Salasana (Password):** Sama kuin `.env`-tiedostossa
+# Tietokanta (Database):** Sama kuin `.env`-tiedostossa
