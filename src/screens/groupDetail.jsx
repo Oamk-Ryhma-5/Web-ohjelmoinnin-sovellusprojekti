@@ -71,6 +71,23 @@ export default function GroupDetail() {
     }
   }
 
+  // Poistu ryhmästä itse (kirjautunut jäsen)
+  async function handleLeaveGroup() {
+    if (!user) return;
+    try {
+      const response = await fetch(`/api/groups/${id}/members/${user.id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (response.ok) {
+        alert('Poistuit ryhmästä.');
+        fetchMembers();
+      }
+    } catch (error) {
+      console.error('Ryhmästä poistuminen epäonnistui:', error);
+    }
+  }
+
   // Omistaja hyväksyy tai hylkää pyynnön
   async function handleRequestAction(userId, action) {
     try {
@@ -87,7 +104,7 @@ export default function GroupDetail() {
     }
   }
 
-  // Poista jäsen ryhmästä
+  // Poista jäsen ryhmästä (omistajan toiminto)
   async function handleRemoveMember(userId) {
     try {
       const response = await fetch(`/api/groups/${id}/members/${userId}`, {
@@ -102,7 +119,7 @@ export default function GroupDetail() {
     }
   }
 
-  // Elokuvan poistaminen ryhmästä (lähetetään mukana user_id turvatarkistusta varten)
+  // Elokuvan poistaminen ryhmästä
   async function handleDeleteMovie(movieId) {
     try {
       const response = await fetch(`/api/groups/${id}/movies/${movieId}`, {
@@ -137,13 +154,23 @@ export default function GroupDetail() {
     <div className="container" style={{ padding: '1rem' }}>
       <h1>{group ? group.name : `Ryhmä #${id}`}</h1>
 
-      {/* Liittymisnappi kirjautuneelle käyttäjälle */}
+      {/* Liittymisnappi kirjautuneelle käyttäjälle, joka ei vielä ole jäsen eikä omistaja */}
       {user && !isOwner && !userMembership && (
         <button
           onClick={handleJoinRequest}
           style={{ background: '#0066cc', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', marginBottom: '1rem' }}
         >
           {texts?.joinGroup || 'Liity ryhmään'}
+        </button>
+      )}
+
+      {/* "Poistu ryhmästä" -painike hyväksytylle jäsenelle (joka ei ole omistaja) */}
+      {isAcceptedMember && !isOwner && (
+        <button
+          onClick={handleLeaveGroup}
+          style={{ background: '#ff4d4d', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', marginBottom: '1rem' }}
+        >
+          {texts?.leaveGroup || 'Poistu ryhmästä'}
         </button>
       )}
 
