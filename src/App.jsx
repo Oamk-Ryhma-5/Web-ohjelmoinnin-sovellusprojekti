@@ -18,6 +18,7 @@ export default function App() {
       '/omat-tiedot': texts.account,
       '/tietoa': texts.about,
       '/suosikit': texts.favorites,
+      '/reviews': texts.reviews,
       '/ryhmat': texts.groups || 'Ryhmät'
     }
 

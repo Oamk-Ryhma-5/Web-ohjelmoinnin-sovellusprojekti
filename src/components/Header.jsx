@@ -19,6 +19,7 @@ export default function Header() {
           </NavLink>
           <NavLink to="/haku">{texts.search}</NavLink>
           <NavLink to="/groups">{texts.groups}</NavLink>
+          <NavLink to="/reviews">{texts.reviews}</NavLink>
           {/* Näytetään suosikit navigaatiossa vain kirjautuneelle käyttäjälle */}
           {user && (
             <NavLink to="/suosikit">

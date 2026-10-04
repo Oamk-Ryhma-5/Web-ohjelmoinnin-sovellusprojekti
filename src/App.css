@@ -30,6 +30,7 @@
   display: flex;
   align-items: center;
   gap: 30px;
+  flex-wrap: wrap;
 }
 
 .site-header a {
@@ -48,6 +49,7 @@
 
 .main-nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 22px;
 }
 
@@ -501,6 +503,41 @@ input[readonly] {
 .load-more {
   margin-top: 28px;
   text-align: center;
+}
+
+/* Arvostelun lomake ja esikatselu */
+.reviews-page {
+  max-width: 680px;
+}
+
+.review-form select {
+  max-width: 140px;
+}
+
+.review-form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--input-border);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  resize: vertical;
+}
+
+.review-preview {
+  margin-top: 24px;
+  overflow-wrap: anywhere;
+}
+
+.review-preview-stars {
+  color: var(--accent);
+  font-size: 22px;
+}
+
+.review-preview-text {
+  margin-bottom: 0;
+  white-space: pre-wrap;
 }
 
 /* Hakusivu ja käyttäjäsivut */

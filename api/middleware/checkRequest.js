@@ -8,6 +8,8 @@ export function allowedOrigins() {
   return [
     `http://localhost:${port}`, 
     `http://127.0.0.1:${port}`,
+    `http://localhost`, 
+    `http://127.0.0.1`,
     'http://86.50.21.8',
     'http://86.50.21.8:80',
     'http://86.50.21.8:5173'
