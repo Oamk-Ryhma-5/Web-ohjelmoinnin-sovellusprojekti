@@ -62,13 +62,18 @@ CREATE TABLE IF NOT EXISTS favorites (
 -- Arvostelut (Vaatimukset 11 & 12)
 CREATE TABLE IF NOT EXISTS reviews (
     id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+    account_id INT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
     movie_id VARCHAR(100) NOT NULL,
-    movie_title VARCHAR(255),
-    stars INT CHECK (stars >= 1 AND stars <= 5),
-    review_text TEXT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    movie_title VARCHAR(255) NOT NULL,
+    stars INT NOT NULL CHECK (stars BETWEEN 1 AND 5),
+    review_text VARCHAR(2000) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(account_id, movie_id)
 );
+
+CREATE INDEX IF NOT EXISTS reviews_movie_idx ON reviews (movie_id);
+CREATE INDEX IF NOT EXISTS reviews_account_idx ON reviews (account_id);
 
 -- Ryhmät (Vaatimus 7)
 CREATE TABLE IF NOT EXISTS groups (

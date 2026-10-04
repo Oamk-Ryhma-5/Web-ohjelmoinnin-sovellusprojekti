@@ -35,3 +35,33 @@ export const removeFavoriteApi = async (movieId) => {
   });
   return response.data;
 };
+
+// Hae tietyn elokuvan kaikki arvostelut
+export const fetchMovieReviews = async (movieId) => {
+  const response = await api.get(`/api/reviews/movie/${movieId}`)
+  return response.data
+}
+
+// Hae kirjautuneen käyttäjän oma arvostelu
+export const fetchMyReview = async (movieId) => {
+  const response = await api.get(`/api/reviews/mine/${movieId}`)
+  return response.data
+}
+
+// Lisää uusi arvostelu
+export const addReviewApi = async (reviewData) => {
+  const response = await api.post('/api/reviews', reviewData)
+  return response.data
+}
+
+// Muokkaa omaa arvostelua
+export const updateReviewApi = async (movieId, reviewData) => {
+  const response = await api.put(`/api/reviews/${movieId}`, reviewData)
+  return response.data
+}
+
+// Poista kirjautuneen käyttäjän oma arvostelu
+export const deleteReviewApi = async (movieId) => {
+  const response = await api.delete(`/api/reviews/${movieId}`)
+  return response.data
+}

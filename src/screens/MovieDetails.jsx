@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { api, addFavoriteApi, errorMessage } from '../api.js'
+import { api, addFavoriteApi, fetchMovieReviews, errorMessage } from '../api.js'
 import { useLanguage } from '../context/useLanguage.js'
 import { useUser } from '../context/useUser.js'
+
+import ReviewForm from '../components/ReviewForm.jsx'
 
 import AddToGroupModel from '../components/AddToGroupModel.jsx'
 
@@ -12,6 +14,8 @@ export default function MovieDetails() {
   const { user } = useUser()
   const [movie, setMovie] = useState(null)
   const [favoriteStatus, setFavoriteStatus] = useState('')
+  const [reviews, setReviews] = useState([])
+  const [reviewReload, setReviewReload] = useState(0)
 
   useEffect(() => {
     async function loadMovie() {
@@ -27,6 +31,21 @@ export default function MovieDetails() {
 
     loadMovie()
   }, [id, locale])
+
+
+useEffect(() => {
+  async function loadReviews() {
+    try {
+      const data = await fetchMovieReviews(id)
+      setReviews(data)
+    } catch (err) {
+      console.error('Arvostelujen lataus epäonnistui:', err)
+    }
+  }
+
+  loadReviews()
+}, [id, reviewReload])
+  
 
   const handleAddFavorite = async () => {
     try {
@@ -54,7 +73,14 @@ export default function MovieDetails() {
     return <p>{texts.loading}</p>
   }
 
+  const visibleReviews = user
+  ? reviews.filter(
+      (review) => Number(review.account_id) !== Number(user.id)
+    )
+  : reviews
+
   return (
+    <>
     <section className="movie-details">
       {movie.posterUrl ? (
         <img
@@ -101,5 +127,48 @@ export default function MovieDetails() {
         )}
       </div>
     </section>
+
+
+    <section className="page-section">
+      <div className="section-heading">
+        <h2>{texts.reviews}</h2>
+      </div>
+
+      {reviews.length === 0 ? (
+        <p className="status-message">Ei vielä arvosteluja.</p>
+      ) : (
+        visibleReviews.map((review) => (
+          <article className="panel" key={review.id}>
+            <p>
+              <strong>{review.username}</strong>
+            </p>
+
+            <p>
+              <span aria-hidden="true">
+                {'★'.repeat(review.stars)}
+                {'☆'.repeat(5 - review.stars)}
+              </span>{' '}
+              {review.stars}/5
+            </p>
+
+            <p>{review.review_text}</p>
+
+            <small>
+              {new Date(review.created_at).toLocaleDateString(locale)}
+            </small>
+          </article>
+        ))
+      )}
+
+      {user && (
+        <ReviewForm
+          movie={movie}
+          onSaved={() => setReviewReload((value) => value + 1)}
+        />
+      )}
+    </section>
+  </>
+
+
   )
 }
