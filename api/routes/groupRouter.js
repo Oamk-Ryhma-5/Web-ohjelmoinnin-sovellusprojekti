@@ -3,7 +3,7 @@ import { pool } from '../models/db.js'
 
 const groupRouter = Router()
 
-// 1. Hakee kaikki ryhmät (Julkinen lista - kaikki näkevät ryhmät)
+// Hakee kaikki ryhmät (Julkinen lista - kaikki näkevät ryhmät)
 groupRouter.get('/', async (_req, res, next) => {
   try {
     const result = await pool.query('SELECT * FROM groups ORDER BY id DESC')
@@ -13,7 +13,7 @@ groupRouter.get('/', async (_req, res, next) => {
   }
 })
 
-// 2. Hakee yksittäisen ryhmän perustiedot
+// Hakee yksittäisen ryhmän perustiedot
 groupRouter.get('/:id', async (req, res, next) => {
   const { id } = req.params
   try {
@@ -25,7 +25,7 @@ groupRouter.get('/:id', async (req, res, next) => {
   }
 })
 
-// 3. Luo uuden ryhmän ja lisää luojan hyväksytyksi jäseneksi
+// Luo uuden ryhmän ja lisää luojan hyväksytyksi jäseneksi
 groupRouter.post('/', async (req, res, next) => {
   const { name, owner_id } = req.body
   if (!name) return res.status(400).json({ error: 'Group name is required' })
@@ -50,7 +50,7 @@ groupRouter.post('/', async (req, res, next) => {
   }
 })
 
-// 4. Poistaa ryhmän (Vain omistaja)
+// Poistaa ryhmän (Vain omistaja)
 groupRouter.delete('/:id', async (req, res, next) => {
   const { id } = req.params
   const userId = req.body?.user_id || req.headers['x-user-id']
