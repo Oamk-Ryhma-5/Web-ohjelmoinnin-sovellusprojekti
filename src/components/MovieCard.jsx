@@ -39,7 +39,6 @@ export default function MovieCard({ movie, genres }) {
           </Link>
         </h3>
         <p className="movie-genres">{genreNames.slice(0, 2).join(' · ')}</p>
-        <p className="movie-description">{movie.overview || texts.descriptionMissing}</p>
       </div>
     </article>
   )

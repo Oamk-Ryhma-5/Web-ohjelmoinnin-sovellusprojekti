@@ -68,11 +68,11 @@ export default function AddToGroupModel({ movie }) {
   if (!user) return null;
 
   return (
-    <div style={{ marginTop: '0.5rem' }}>
+    <div>
       {!isOpen ? (
         <button
           onClick={() => setIsOpen(true)}
-          style={{ padding: '0.4rem 0.8rem', cursor: 'pointer', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '4px' }}
+          className="button"
         >
           ➕ {texts.addToGroup || 'Lisää ryhmään'}
         </button>

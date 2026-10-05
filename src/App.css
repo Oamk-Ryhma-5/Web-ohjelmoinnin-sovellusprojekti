@@ -480,6 +480,28 @@ input[readonly] {
   max-width: 800px;
 }
 
+.movie-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.movie-actions .button {
+  width: 180px;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.movie-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 650px;
+}
+
 .movie-details-poster {
   width: 100%;
   border: 1px solid var(--border);
