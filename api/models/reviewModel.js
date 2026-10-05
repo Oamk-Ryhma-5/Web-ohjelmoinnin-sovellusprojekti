@@ -33,7 +33,7 @@ export const getUserReview = async (accountId, movieId) => {
 export const updateReview = async (accountId, movieId, stars, reviewText) => {
     const result = await pool.query(
         `UPDATE reviews
-        SET stars = $1, review_text = $2, updated_at = now()
+        SET stars = $1, review_text = $2
         WHERE account_id = $3 AND movie_id = $4
         RETURNING *`,
         [Number(stars), reviewText, Number(accountId), String(movieId)]
