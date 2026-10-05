@@ -34,7 +34,7 @@ export default function Header() {
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
               aria-label={texts.language || 'Kieli'}
-              className="language-select"
+              className="theme-select"
             >
               <option value="fi">FI</option>
               <option value="en">EN</option>

@@ -87,7 +87,7 @@ export default function MovieDetails() {
 
         {/* Näytetään toiminnot (Suosikki & Ryhmään lisääminen) kirjautuneelle käyttäjälle */}
         {user && (
-          <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div className="movie-actions">
             <div>
               <button className="button" onClick={handleAddFavorite}>
                 ❤️ {texts.addToFavorites}
