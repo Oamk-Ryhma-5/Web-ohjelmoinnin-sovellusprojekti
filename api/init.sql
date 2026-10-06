@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS app_sessions (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Suosikit (Vaatimukset 13 & 14)
+-- Suosikit
 CREATE TABLE IF NOT EXISTS favorites (
     id SERIAL PRIMARY KEY,
     account_id INT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS favorites (
     UNIQUE(account_id, movie_id)
 );
 
--- Arvostelut (Vaatimukset 11 & 12)
+-- Arvostelut - Mukana updated_at-sarake, joka toimii nyt suoraan myös koodin kanssa
 CREATE TABLE IF NOT EXISTS reviews (
     id SERIAL PRIMARY KEY,
     account_id INT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS reviews (
 CREATE INDEX IF NOT EXISTS reviews_movie_idx ON reviews (movie_id);
 CREATE INDEX IF NOT EXISTS reviews_account_idx ON reviews (account_id);
 
--- Ryhmät (Vaatimus 7)
+-- Ryhmät
 CREATE TABLE IF NOT EXISTS groups (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS groups (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Ryhmän jäsenet ja liittymispyynnöt (Vaatimukset 8 & 9)
+-- Ryhmän jäsenet ja liittymispyynnöt
 CREATE TABLE IF NOT EXISTS group_members (
     id SERIAL PRIMARY KEY,
     group_id INT NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS group_members (
     UNIQUE(group_id, user_id)
 );
 
--- Ryhmän elokuvat / kustomointi (Vaatimus 10)
+-- Ryhmän elokuvat / kustomointi
 CREATE TABLE IF NOT EXISTS group_movies (
     id SERIAL PRIMARY KEY,
     group_id INT NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS group_movies (
     UNIQUE(group_id, movie_id)
 );
 
--- Ryhmän keskustelu / kommentit (Lisäominaisuus)
+-- Ryhmän keskustelu / kommentit
 CREATE TABLE IF NOT EXISTS group_comments (
     id SERIAL PRIMARY KEY,
     group_id INT NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
