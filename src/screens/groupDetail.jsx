@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, Link } from 'react-router-dom';
 import { useUser } from '../context/useUser.js';
 import { useLanguage } from '../context/useLanguage.js';
 
@@ -295,45 +295,50 @@ export default function GroupDetail() {
                     alignItems: 'center'
                   }}
                 >
-                  {posterUrl ? (
-                    <img
-                      src={posterUrl}
-                      alt={movie.movie_title || movie.title}
+                  <Link 
+                    to={`/movie/${targetMovieId}`} 
+                    style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                  >
+                    {posterUrl ? (
+                      <img
+                        src={posterUrl}
+                        alt={movie.movie_title || movie.title}
+                        style={{
+                          width: '100%',
+                          height: '225px',
+                          objectFit: 'cover',
+                          borderRadius: '4px'
+                        }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: '100%',
+                          height: '225px',
+                          background: '#f0f0f0',
+                          borderRadius: '4px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#888',
+                          fontSize: '0.85rem'
+                        }}
+                      >
+                        {texts?.posterMissing || 'Juliste puuttuu'}
+                      </div>
+                    )}
+
+                    <h3
                       style={{
-                        width: '100%',
-                        height: '225px',
-                        objectFit: 'cover',
-                        borderRadius: '4px'
-                      }}
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        width: '100%',
-                        height: '225px',
-                        background: '#f0f0f0',
-                        borderRadius: '4px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#888',
-                        fontSize: '0.85rem'
+                        fontSize: '1rem',
+                        margin: '0.75rem 0 0.5rem 0',
+                        textAlign: 'center',
+                        wordBreak: 'break-word'
                       }}
                     >
-                      {texts?.posterMissing || 'Juliste puuttuu'}
-                    </div>
-                  )}
-
-                  <h3
-                    style={{
-                      fontSize: '1rem',
-                      margin: '0.75rem 0 0.5rem 0',
-                      textAlign: 'center',
-                      wordBreak: 'break-word'
-                    }}
-                  >
-                    {movie.movie_title || movie.title}
-                  </h3>
+                      {movie.movie_title || movie.title}
+                    </h3>
+                  </Link>
 
                   {/* Poista elokuva -painike näytetään VAIN ryhmän hyväksytylle jäsenelle tai omistajalle */}
                   {isAcceptedMember && (
