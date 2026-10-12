@@ -1,25 +1,18 @@
 import { useState, useEffect } from 'react'
 import { api } from '../api.js'
 import { useLanguage } from '../context/useLanguage.js'
-import { useUser } from '../context/useUser.js'
 
 export default function Reviews() {
   const { locale, texts } = useLanguage()
-  const { user } = useUser()
   
   const [reviewsList, setReviewsList] = useState([])
   const [visibleCount, setVisibleCount] = useState(3)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function loadUserReviews() {
-      if (!user) {
-        setLoading(false)
-        return
-      }
-
+    async function loadAllReviews() {
       try {
-        const response = await api.get('/api/reviews/mine')
+        const response = await api.get('/api/reviews/all')
         const rawReviews = response.data
 
         const enrichedReviews = await Promise.all(
@@ -41,22 +34,14 @@ export default function Reviews() {
 
         setReviewsList(enrichedReviews)
       } catch (err) {
-        console.error('Omien arvostelujen lataus epäonnistui:', err)
+        console.error('Kaikkien arvostelujen lataus epäonnistui:', err)
       } finally {
         setLoading(false)
       }
     }
 
-    loadUserReviews()
-  }, [user, locale])
-
-  if (!user) {
-    return (
-      <section className="reviews-page">
-        <p>Kirjaudu sisään nähdäksesi omat arvostelusi.</p>
-      </section>
-    )
-  }
+    loadAllReviews()
+  }, [locale])
 
   if (loading) {
     return <p>{texts.loading}</p>
@@ -67,11 +52,11 @@ export default function Reviews() {
   return (
     <section className="reviews-page" aria-labelledby="reviews-title">
       <header className="page-heading">
-        <h1 id="reviews-title">Omat arvostelut</h1>
+        <h1 id="reviews-title">Kaikki arvostelut</h1>
       </header>
 
       {reviewsList.length === 0 ? (
-        <p className="status-message">Et ole vielä arvostellut yhtään elokuvaa.</p>
+        <p className="status-message">Ei vielä yhtään arvostelua.</p>
       ) : (
         <section className="panel reviews-list-section" aria-labelledby="list-title">
           <div className="reviews-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -94,7 +79,10 @@ export default function Reviews() {
                 )}
 
                 <div style={{ flex: 1 }}>
-                  <h3 style={{ margin: '0 0 8px 0' }}>{review.movieTitle}</h3>
+                  <h3 style={{ margin: '0 0 4px 0' }}>{review.movieTitle}</h3>
+                  <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#666' }}>
+                    Arvostellut: <strong>{review.username || 'Tuntematon'}</strong>
+                  </p>
                   <p className="review-card-stars" aria-hidden="true" style={{ margin: '0 0 8px 0' }}>
                     {'★'.repeat(review.stars)}{'☆'.repeat(5 - review.stars)} ({review.stars}/5)
                   </p>

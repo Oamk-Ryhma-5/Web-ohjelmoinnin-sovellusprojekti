@@ -30,11 +30,21 @@ export const getUserReview = async (accountId, movieId) => {
     return result.rows[0]
 }
 
-// UUSI: Hakee kirjautuneen käyttäjän kaikki arvostelut
 export const getUserReviews = async (accountId) => {
     const result = await pool.query(
         `SELECT * FROM reviews WHERE account_id = $1 ORDER BY created_at DESC`,
         [Number(accountId)]
+    )
+    return result.rows
+}
+
+// Hakee kaikkien käyttäjien arvostelut nimimerkkeineen
+export const getAllReviews = async () => {
+    const result = await pool.query(
+        `SELECT reviews.*, app_users.username
+        FROM reviews
+        JOIN app_users ON reviews.account_id = app_users.id
+        ORDER BY reviews.created_at DESC`
     )
     return result.rows
 }
