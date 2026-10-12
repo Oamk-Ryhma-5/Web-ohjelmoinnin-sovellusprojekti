@@ -8,6 +8,12 @@ export default function Reviews() {
   const [preview, setPreview] = useState(null)
   const [textError, setTextError] = useState(false)
 
+  // Olemassa olevat arvostelut listassa (tähän voi myöhemmin tadata haun API:sta)
+  const [reviewsList, setReviewsList] = useState([])
+  
+  // Tila sille, montako arvostelua näytetään kerrallaan (alkuun 3)
+  const [visibleCount, setVisibleCount] = useState(3)
+
   function showPreview(event) {
     event.preventDefault()
     const reviewText = text.trim()
@@ -17,9 +23,24 @@ export default function Reviews() {
       return
     }
 
-    // Esikatselu saa kopion lomakkeen nykyisistä arvoista.
     setPreview({ stars, text: reviewText })
     setTextError(false)
+  }
+
+  // Funktio, jolla esikatselussa oleva arvostelu lisätään listaan
+  function handleAddReview() {
+    if (!preview) return
+
+    const newReview = {
+      id: Date.now(),
+      stars: preview.stars,
+      text: preview.text,
+      date: new Date().toLocaleDateString()
+    }
+
+    setReviewsList([newReview, ...reviewsList])
+    setPreview(null)
+    setText('')
   }
 
   return (
@@ -29,6 +50,37 @@ export default function Reviews() {
         <p>{texts.reviewDraftHint}</p>
       </header>
 
+      {/* Arvostelujen lista ja "Näytä lisää" -toiminnallisuus */}
+      {reviewsList.length > 0 && (
+        <section className="panel reviews-list-section" aria-labelledby="list-title">
+          <h2 id="list-title">Arvostelut</h2>
+
+          <div className="reviews-container">
+            {reviewsList.slice(0, visibleCount).map((review) => (
+              <article key={review.id} className="review-card" style={{ marginBottom: '16px' }}>
+                <p className="review-card-stars" aria-hidden="true">
+                  {'★'.repeat(review.stars)}{'☆'.repeat(5 - review.stars)} ({review.stars}/5)
+                </p>
+                <p className="review-card-text">"{review.text}"</p>
+                <small>{review.date}</small>
+              </article>
+            ))}
+          </div>
+
+          {/* Näytä lisää -nappi */}
+          {visibleCount < reviewsList.length && (
+            <button 
+              className="button secondary-button" 
+              onClick={() => setVisibleCount((prev) => prev + 3)}
+              style={{ marginTop: '16px' }}
+            >
+              Näytä lisää
+            </button>
+          )}
+        </section>
+      )}
+
+      {/* Uuden arvostelun kirjoituslomake */}
       <form className="panel review-form" onSubmit={showPreview}>
         <h2>{texts.writeReview}</h2>
 
@@ -67,6 +119,7 @@ export default function Reviews() {
         <button className="button" type="submit">{texts.reviewPreviewButton}</button>
       </form>
 
+      {/* Esikatselu ja lähetysnappi */}
       {preview && (
         <section className="panel review-preview" aria-labelledby="preview-title">
           <h2 id="preview-title">{texts.reviewPreviewTitle}</h2>
@@ -75,6 +128,10 @@ export default function Reviews() {
             {' '}{preview.stars}/5
           </p>
           <p className="review-preview-text">{preview.text}</p>
+
+          <button className="button" onClick={handleAddReview} style={{ marginTop: '12px' }}>
+            Lähetä arvostelu
+          </button>
         </section>
       )}
     </section>
