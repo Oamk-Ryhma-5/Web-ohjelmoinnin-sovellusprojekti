@@ -52,11 +52,11 @@ export default function Reviews() {
   return (
     <section className="reviews-page" aria-labelledby="reviews-title">
       <header className="page-heading">
-        <h1 id="reviews-title">Kaikki arvostelut</h1>
+        <h1 id="reviews-title">{texts.reviews}</h1>
       </header>
 
       {reviewsList.length === 0 ? (
-        <p className="status-message">Ei vielä yhtään arvostelua.</p>
+        <p className="status-message">{texts.noComments || 'Ei vielä yhtään arvostelua.'}</p>
       ) : (
         <section className="panel reviews-list-section" aria-labelledby="list-title">
           <div className="reviews-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -74,14 +74,14 @@ export default function Reviews() {
                   />
                 ) : (
                   <div style={{ width: '80px', height: '120px', background: '#ddd', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', textAlign: 'center', borderRadius: '4px' }}>
-                    Ei kuvaa
+                    {texts.posterMissing}
                   </div>
                 )}
 
                 <div style={{ flex: 1 }}>
                   <h3 style={{ margin: '0 0 4px 0' }}>{review.movieTitle}</h3>
                   <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#666' }}>
-                    Arvostellut: <strong>{review.username || 'Tuntematon'}</strong>
+                    {texts.owner ? 'Arvostellut:' : 'Reviewed by:'} <strong>{review.username || 'Tuntematon'}</strong>
                   </p>
                   <p className="review-card-stars" aria-hidden="true" style={{ margin: '0 0 8px 0' }}>
                     {'★'.repeat(review.stars)}{'☆'.repeat(5 - review.stars)} ({review.stars}/5)
@@ -99,7 +99,7 @@ export default function Reviews() {
               onClick={() => setVisibleCount((prev) => prev + 3)}
               style={{ marginTop: '20px' }}
             >
-              Näytä lisää
+              {texts.more}
             </button>
           )}
         </section>
