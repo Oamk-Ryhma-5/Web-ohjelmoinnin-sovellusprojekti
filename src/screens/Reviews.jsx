@@ -1,137 +1,119 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { api } from '../api.js'
 import { useLanguage } from '../context/useLanguage.js'
+import { useUser } from '../context/useUser.js'
 
 export default function Reviews() {
-  const { texts } = useLanguage()
-  const [stars, setStars] = useState(3)
-  const [text, setText] = useState('')
-  const [preview, setPreview] = useState(null)
-  const [textError, setTextError] = useState(false)
-
-  // Olemassa olevat arvostelut listassa (tähän voi myöhemmin tadata haun API:sta)
-  const [reviewsList, setReviewsList] = useState([])
+  const { locale, texts } = useLanguage()
+  const { user } = useUser()
   
-  // Tila sille, montako arvostelua näytetään kerrallaan (alkuun 3)
+  const [reviewsList, setReviewsList] = useState([])
   const [visibleCount, setVisibleCount] = useState(3)
+  const [loading, setLoading] = useState(true)
 
-  function showPreview(event) {
-    event.preventDefault()
-    const reviewText = text.trim()
+  useEffect(() => {
+    async function loadUserReviews() {
+      if (!user) {
+        setLoading(false)
+        return
+      }
 
-    if (!reviewText) {
-      setTextError(true)
-      return
+      try {
+        const response = await api.get('/api/reviews/mine')
+        const rawReviews = response.data
+
+        const enrichedReviews = await Promise.all(
+          rawReviews.map(async (review) => {
+            try {
+              const movieRes = await api.get(`/api/movies/${review.movie_id}`, {
+                params: { language: locale },
+              })
+              return {
+                ...review,
+                posterUrl: movieRes.data.posterUrl || movieRes.data.poster_path || '',
+                movieTitle: movieRes.data.title || review.movie_title
+              }
+            } catch {
+              return { ...review, posterUrl: '', movieTitle: review.movie_title }
+            }
+          })
+        )
+
+        setReviewsList(enrichedReviews)
+      } catch (err) {
+        console.error('Omien arvostelujen lataus epäonnistui:', err)
+      } finally {
+        setLoading(false)
+      }
     }
 
-    setPreview({ stars, text: reviewText })
-    setTextError(false)
+    loadUserReviews()
+  }, [user, locale])
+
+  if (!user) {
+    return (
+      <section className="reviews-page">
+        <p>Kirjaudu sisään nähdäksesi omat arvostelusi.</p>
+      </section>
+    )
   }
 
-  // Funktio, jolla esikatselussa oleva arvostelu lisätään listaan
-  function handleAddReview() {
-    if (!preview) return
-
-    const newReview = {
-      id: Date.now(),
-      stars: preview.stars,
-      text: preview.text,
-      date: new Date().toLocaleDateString()
-    }
-
-    setReviewsList([newReview, ...reviewsList])
-    setPreview(null)
-    setText('')
+  if (loading) {
+    return <p>{texts.loading}</p>
   }
+
+  const visibleReviews = reviewsList.slice(0, visibleCount)
 
   return (
     <section className="reviews-page" aria-labelledby="reviews-title">
       <header className="page-heading">
-        <h1 id="reviews-title">{texts.reviews}</h1>
-        <p>{texts.reviewDraftHint}</p>
+        <h1 id="reviews-title">Omat arvostelut</h1>
       </header>
 
-      {/* Arvostelujen lista ja "Näytä lisää" -toiminnallisuus */}
-      {reviewsList.length > 0 && (
+      {reviewsList.length === 0 ? (
+        <p className="status-message">Et ole vielä arvostellut yhtään elokuvaa.</p>
+      ) : (
         <section className="panel reviews-list-section" aria-labelledby="list-title">
-          <h2 id="list-title">Arvostelut</h2>
+          <div className="reviews-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {visibleReviews.map((review) => (
+              <article 
+                key={review.id} 
+                className="review-card" 
+                style={{ display: 'flex', gap: '16px', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '16px' }}
+              >
+                {review.posterUrl ? (
+                  <img 
+                    src={review.posterUrl} 
+                    alt={review.movieTitle} 
+                    style={{ width: '80px', height: '120px', objectFit: 'cover', borderRadius: '4px' }} 
+                  />
+                ) : (
+                  <div style={{ width: '80px', height: '120px', background: '#ddd', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', textAlign: 'center', borderRadius: '4px' }}>
+                    Ei kuvaa
+                  </div>
+                )}
 
-          <div className="reviews-container">
-            {reviewsList.slice(0, visibleCount).map((review) => (
-              <article key={review.id} className="review-card" style={{ marginBottom: '16px' }}>
-                <p className="review-card-stars" aria-hidden="true">
-                  {'★'.repeat(review.stars)}{'☆'.repeat(5 - review.stars)} ({review.stars}/5)
-                </p>
-                <p className="review-card-text">"{review.text}"</p>
-                <small>{review.date}</small>
+                <div style={{ flex: 1 }}>
+                  <h3 style={{ margin: '0 0 8px 0' }}>{review.movieTitle}</h3>
+                  <p className="review-card-stars" aria-hidden="true" style={{ margin: '0 0 8px 0' }}>
+                    {'★'.repeat(review.stars)}{'☆'.repeat(5 - review.stars)} ({review.stars}/5)
+                  </p>
+                  <p className="review-card-text" style={{ margin: '0 0 8px 0' }}>"{review.review_text}"</p>
+                  <small>{new Date(review.created_at).toLocaleDateString(locale)}</small>
+                </div>
               </article>
             ))}
           </div>
 
-          {/* Näytä lisää -nappi */}
           {visibleCount < reviewsList.length && (
             <button 
               className="button secondary-button" 
               onClick={() => setVisibleCount((prev) => prev + 3)}
-              style={{ marginTop: '16px' }}
+              style={{ marginTop: '20px' }}
             >
               Näytä lisää
             </button>
           )}
-        </section>
-      )}
-
-      {/* Uuden arvostelun kirjoituslomake */}
-      <form className="panel review-form" onSubmit={showPreview}>
-        <h2>{texts.writeReview}</h2>
-
-        <div className="form-field">
-          <label htmlFor="review-stars">{texts.stars}</label>
-          <select
-            id="review-stars"
-            value={stars}
-            onChange={(event) => setStars(Number(event.target.value))}
-          >
-            {[1, 2, 3, 4, 5].map((number) => (
-              <option key={number} value={number}>{number}/5</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-field">
-          <label htmlFor="review-text">{texts.reviewText}</label>
-          <textarea
-            id="review-text"
-            rows={5}
-            maxLength={2000}
-            required
-            value={text}
-            onChange={(event) => {
-              setText(event.target.value)
-              setTextError(false)
-            }}
-            aria-describedby="review-character-count"
-          />
-          <small id="review-character-count">{text.length}/2000 {texts.reviewCharacters}</small>
-        </div>
-
-        {textError && <p className="form-error" role="alert">{texts.reviewTextRequired}</p>}
-
-        <button className="button" type="submit">{texts.reviewPreviewButton}</button>
-      </form>
-
-      {/* Esikatselu ja lähetysnappi */}
-      {preview && (
-        <section className="panel review-preview" aria-labelledby="preview-title">
-          <h2 id="preview-title">{texts.reviewPreviewTitle}</h2>
-          <p className="review-preview-stars">
-            <span aria-hidden="true">{'★'.repeat(preview.stars)}{'☆'.repeat(5 - preview.stars)}</span>
-            {' '}{preview.stars}/5
-          </p>
-          <p className="review-preview-text">{preview.text}</p>
-
-          <button className="button" onClick={handleAddReview} style={{ marginTop: '12px' }}>
-            Lähetä arvostelu
-          </button>
         </section>
       )}
     </section>

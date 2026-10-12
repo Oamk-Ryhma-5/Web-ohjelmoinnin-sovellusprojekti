@@ -16,7 +16,7 @@ export default function MovieDetails() {
   const [reviews, setReviews] = useState([])
   const [reviewReload, setReviewReload] = useState(0)
 
-  // Tila sille, montako arvostelua näytetään kerrallaan (alkuun 3)
+  // Tila näkyvien arvostelujen määrälle (alkuun 3)
   const [visibleCount, setVisibleCount] = useState(3)
 
   useEffect(() => {
@@ -73,14 +73,12 @@ export default function MovieDetails() {
     return <p>{texts.loading}</p>
   }
 
-  // Suodatetaan mahdollisesti kirjautuneen käyttäjän oma arvostelu pois muista
   const filteredReviews = user
     ? reviews.filter(
         (review) => Number(review.account_id) !== Number(user.id)
       )
     : reviews
 
-  // Leikataan näytettävä lista rajattuun määrään
   const visibleReviews = filteredReviews.slice(0, visibleCount)
 
   return (
@@ -115,7 +113,6 @@ export default function MovieDetails() {
             {movie.overview || texts.descriptionMissing}
           </p>
 
-          {/* Näytetään toiminnot kirjautuneelle käyttäjälle */}
           {user && (
             <div className="movie-actions">
               <div>
@@ -162,7 +159,6 @@ export default function MovieDetails() {
               </article>
             ))}
 
-            {/* Näytä lisää -nappi, jos kaikkia arvosteluja ei vielä näytetä */}
             {visibleCount < filteredReviews.length && (
               <button 
                 className="button secondary-button" 

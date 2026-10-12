@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { auth } from '../middleware/auth.js'
 import { checkRequest } from '../middleware/checkRequest.js'
-import { addReview, getMovieReviews, getUserReview, updateReview, deleteReview } from '../models/reviewModel.js'
+import { addReview, getMovieReviews, getUserReview, getUserReviews, updateReview, deleteReview } from '../models/reviewModel.js'
 
 const router = Router()
 
@@ -30,7 +30,25 @@ router.get('/movie/:movieId', async (req, res, next) => {
   }
 })
 
-// Hakee kirjautuneen käyttäjän oman arvostelun
+// UUSI: Hakee kirjautuneen käyttäjän kaikki arvostelut
+router.get('/mine', auth, async (req, res, next) => {
+  try {
+    const accountId = getAccountId(req)
+
+    if (!accountId) {
+      return res.status(401).json({
+        error: 'Käyttäjä-ID puuttuu'
+      })
+    }
+
+    const reviews = await getUserReviews(accountId)
+    res.json(reviews)
+  } catch (err) {
+    next(err)
+  }
+})
+
+// Hakee kirjautuneen käyttäjän oman arvostelun tietylle leffalle
 router.get('/mine/:movieId', auth, async (req, res, next) => {
   try {
     const accountId = getAccountId(req)
