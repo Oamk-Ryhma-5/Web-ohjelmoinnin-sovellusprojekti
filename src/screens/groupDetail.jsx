@@ -163,7 +163,7 @@ export default function GroupDetail() {
       {user && !isOwner && !userMembership && (
         <button
           onClick={handleJoinRequest}
-          style={{ background: '#0066cc', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', marginBottom: '1rem' }}
+          style={{ background: 'var(--button-background)', color: 'var(--button-text)', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', marginBottom: '1rem' }}
         >
           {texts?.sendJoinRequest || 'Lähetä liittymispyyntö'}
         </button>
@@ -173,20 +173,20 @@ export default function GroupDetail() {
       {isAcceptedMember && !isOwner && (
         <button
           onClick={handleLeaveGroup}
-          style={{ background: '#ff4d4d', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', marginBottom: '1rem' }}
+          style={{ background: 'var(--danger-background)', color: 'var(--danger-text)', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', marginBottom: '1rem' }}
         >
           {texts?.leaveGroup || 'Poistu ryhmästä'}
         </button>
       )}
 
       {userMembership && userMembership.status === 'pending' && (
-        <p style={{ fontStyle: 'italic', color: '#666' }}>
+        <p style={{ fontStyle: 'italic', color: 'var(--muted)' }}>
           {texts?.pendingRequest || '⏳ Liittymispyyntösi odottaa ryhmän omistajan hyväksyntää.'}
         </p>
       )}
 
       {/* Ryhmän jäsenet - Näkyy vain hyväksytyille jäsenille ja omistajalle */}
-      <section className="group-members-section" style={{ marginTop: '1.5rem', background: '#f5f5f5', padding: '1rem', borderRadius: '8px' }}>
+      <section className="group-members-section" style={{ marginTop: '1.5rem', background: 'var(--subtle)', padding: '1rem', borderRadius: '8px' }}>
         <h2>{texts?.members || 'Jäsenet 👥'}</h2>
         
         {!user ? (
@@ -201,8 +201,8 @@ export default function GroupDetail() {
               <li
                 key={member.user_id}
                 style={{
-                  background: '#ffffff',
-                  border: '1px solid #ddd',
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border)',
                   padding: '0.4rem 0.8rem',
                   borderRadius: '20px',
                   fontSize: '0.9rem',
@@ -217,7 +217,7 @@ export default function GroupDetail() {
                   <button
                     onClick={() => handleRemoveMember(member.user_id)}
                     title={texts?.removeFromGroup || 'Poista ryhmästä'}
-                    style={{ background: '#ff4d4d', color: 'white', border: 'none', borderRadius: '50%', width: '18px', height: '18px', fontSize: '10px', cursor: 'pointer' }}
+                    style={{ background: 'var(--danger-background)', color: 'var(--danger-text)', border: 'none', borderRadius: '50%', width: '18px', height: '18px', fontSize: '10px', cursor: 'pointer' }}
                   >
                     ✕
                   </button>
@@ -229,7 +229,7 @@ export default function GroupDetail() {
 
         {/* Odottavat pyynnöt näytetään vain omistajalle */}
         {isOwner && members.some(m => m.status === 'pending') && (
-          <div style={{ marginTop: '1rem', borderTop: '1px solid #ddd', paddingTop: '0.5rem' }}>
+          <div style={{ marginTop: '1rem', borderTop: '1px solid var(--border)', paddingTop: '0.5rem' }}>
             <h3>{texts?.pendingRequestsHeader || 'Odottavat liittymispyynnöt 📩'}</h3>
             <ul style={{ listStyle: 'none', padding: 0 }}>
               {members.filter(m => m.status === 'pending').map((reqUser) => (
@@ -237,13 +237,13 @@ export default function GroupDetail() {
                   <span>{reqUser.username}</span>
                   <button
                     onClick={() => handleRequestAction(reqUser.user_id, 'accept')}
-                    style={{ background: '#4CAF50', color: 'white', border: 'none', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer' }}
+                    style={{ background: 'var(--button-background)', color: 'var(--button-text)', border: 'none', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer' }}
                   >
                     {texts?.accept || 'Hyväksy'}
                   </button>
                   <button
                     onClick={() => handleRequestAction(reqUser.user_id, 'reject')}
-                    style={{ background: '#ff4d4d', color: 'white', border: 'none', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer' }}
+                    style={{ background: 'var(--danger-background)', color: 'var(--danger-text)', border: 'none', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer' }}
                   >
                     {texts?.reject || 'Hylkää'}
                   </button>
@@ -284,10 +284,10 @@ export default function GroupDetail() {
                   key={targetMovieId}
                   className="movie-card"
                   style={{
-                    border: '1px solid #e0e0e0',
+                    border: '1px solid var(--border)',
                     borderRadius: '8px',
                     padding: '0.75rem',
-                    background: '#ffffff',
+                    background: 'var(--surface)',
                     boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
                     display: 'flex',
                     flexDirection: 'column',
@@ -315,12 +315,12 @@ export default function GroupDetail() {
                         style={{
                           width: '100%',
                           height: '225px',
-                          background: '#f0f0f0',
+                          background: 'var(--subtle)',
                           borderRadius: '4px',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          color: '#888',
+                          color: 'var(--muted)',
                           fontSize: '0.85rem'
                         }}
                       >
@@ -346,8 +346,8 @@ export default function GroupDetail() {
                       onClick={() => handleDeleteMovie(targetMovieId)}
                       style={{
                         marginTop: 'auto',
-                        background: '#ff4d4d',
-                        color: 'white',
+                        background: 'var(--danger-background)',
+                        color: 'var(--danger-text)',
                         border: 'none',
                         padding: '0.4rem 0.8rem',
                         borderRadius: '4px',

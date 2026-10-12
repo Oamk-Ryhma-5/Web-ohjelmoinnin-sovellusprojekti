@@ -91,7 +91,7 @@ export default function Groups() {
 
         {user ? (
           <div className="logged-in-content">
-            <form onSubmit={handleCreateGroup} style={{ marginBottom: '1rem' }}>
+            <form className="group-create-form" onSubmit={handleCreateGroup} style={{ marginBottom: '1rem' }}>
               <input
                 type="text"
                 placeholder={texts.newGroupNamePlaceholder || 'Uuden ryhmän nimi...'}
@@ -99,7 +99,7 @@ export default function Groups() {
                 onChange={(e) => setNewGroupName(e.target.value)}
                 style={{ marginRight: '0.5rem', padding: '0.4rem' }}
               />
-              <button type="submit">{texts.createGroup || 'Luo ryhmä'}</button>
+              <button className="button" type="submit">{texts.createGroup || 'Luo ryhmä'}</button>
             </form>
           </div>
         ) : (
@@ -112,16 +112,16 @@ export default function Groups() {
             const isOwner = user && String(user.id) === String(group.owner_id);
 
             return (
-              <li key={group.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', padding: '0.5rem', background: '#f9f9f9' }}>
+              <li className="group-list-item" key={group.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', padding: '0.5rem', background: 'var(--surface)' }}>
                 <Link 
                   to={`/ryhma/${group.id}`} 
                   state={{ group }} 
-                  style={{ textDecoration: 'none', color: '#0066cc', fontWeight: 'bold' }}
+                  style={{ textDecoration: 'none', color: 'var(--accent)', fontWeight: 'bold' }}
                 >
                   {group.name}
                 </Link>
                 {isOwner && (
-                  <button onClick={() => handleDeleteGroup(group.id)} style={{ background: '#ff4d4d', color: 'white', border: 'none', padding: '0.3rem 0.6rem', cursor: 'pointer' }}>
+                  <button onClick={() => handleDeleteGroup(group.id)} style={{ background: 'var(--danger-background)', color: 'var(--danger-text)', border: 'none', padding: '0.3rem 0.6rem', cursor: 'pointer' }}>
                     {texts.delete || 'Poista'}
                   </button>
                 )}

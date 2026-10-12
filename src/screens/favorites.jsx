@@ -33,7 +33,7 @@ export default function Favorites() {
   }
 
   if (loading) return <div>{texts.loading}</div>
-  if (error) return <div style={{ color: 'red' }}>{error}</div>
+  if (error) return <div style={{ color: 'var(--error-text)' }}>{error}</div>
 
   return (
     <div style={{ padding: '20px' }}>
@@ -44,7 +44,7 @@ export default function Favorites() {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
           {favorites.map((movie) => (
-            <div key={movie.id || movie.movie_id} style={{ border: '1px solid #ccc', padding: '10px', borderRadius: '8px' }}>
+            <div className="favorite-card" key={movie.id || movie.movie_id} style={{ border: '1px solid var(--border)', padding: '10px', borderRadius: '8px' }}>
               {movie.poster_path ? (
               <Link to={`/movie/${movie.movie_id}`}>  
                 <img 
@@ -54,7 +54,7 @@ export default function Favorites() {
                 />
                 </Link>
               ) : (
-                <div style={{ height: '270px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eee', borderRadius: '4px' }}>
+                <div style={{ height: '270px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--subtle)', borderRadius: '4px' }}>
                   {texts.posterMissing}
                 </div>
               )}
@@ -63,7 +63,7 @@ export default function Favorites() {
                 {movie.movie_title || texts.titleMissing}
                 </Link>
                 </h3>
-              <button onClick={() => handleRemove(movie.movie_id)}>
+              <button className="button secondary small" onClick={() => handleRemove(movie.movie_id)}>
                 {texts.removeFromFavorites}
               </button>
             </div>

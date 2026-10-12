@@ -27,7 +27,7 @@ export default function App() {
       ? `${texts.groups || 'Ryhmä'} #${pathname.split('/')[2]}`
       : titles[pathname] || texts.notFound
 
-    document.title = `Leffahaku · ${currentTitle}`
+    document.title = `Spotless Cinema · ${currentTitle}`
   }, [pathname, texts])
 
   useEffect(() => {

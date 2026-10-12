@@ -11,7 +11,7 @@ export default function Header() {
     <header className="site-header">
       <div className="header-content">
         <Link className="site-name" to="/">
-          Leffahaku
+          Spotless Cinema
         </Link>
         <nav className="main-nav" aria-label={texts.navigation}>
           <NavLink to="/" end>

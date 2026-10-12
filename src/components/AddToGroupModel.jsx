@@ -77,11 +77,11 @@ export default function AddToGroupModel({ movie }) {
           ➕ {texts.addToGroup || 'Lisää ryhmään'}
         </button>
       ) : (
-        <div style={{ border: '1px solid #ccc', padding: '0.8rem', borderRadius: '6px', backgroundColor: '#f9f9f9', marginTop: '0.5rem' }}>
+        <div className="group-picker">
           <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 'bold' }}>
             {texts.selectGroup || 'Valitse ryhmä'}:
           </label>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <div className="group-picker-controls">
             <select
               value={selectedGroupId}
               onChange={(e) => setSelectedGroupId(e.target.value)}
@@ -95,10 +95,10 @@ export default function AddToGroupModel({ movie }) {
               ))}
             </select>
 
-            <button onClick={handleAddMovie} disabled={!selectedGroupId} style={{ padding: '0.4rem 0.8rem', cursor: 'pointer' }}>
+            <button className="button small" onClick={handleAddMovie} disabled={!selectedGroupId}>
               {texts.save || 'Tallenna'}
             </button>
-            <button onClick={() => setIsOpen(false)} style={{ padding: '0.4rem 0.8rem', cursor: 'pointer', background: '#ccc' }}>
+            <button className="button secondary small" onClick={() => setIsOpen(false)}>
               {texts.cancel || 'Peruuta'}
             </button>
           </div>
