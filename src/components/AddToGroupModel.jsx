@@ -38,6 +38,8 @@ export default function AddToGroupModel({ movie }) {
       rawPoster = rawPoster.replace(/^https:\/\/image\.tmdb\.org\/t\/p\/[^\/]+/, '');
     }
 
+    const detectedType = movie.type || (window.location.pathname.startsWith('/tv') ? 'tv' : 'movie');
+
     try {
       const response = await fetch(`/api/groups/${selectedGroupId}/movies`, {
         method: 'POST',
@@ -47,6 +49,7 @@ export default function AddToGroupModel({ movie }) {
           movie_title: movie.title || movie.name || texts.titleMissing,
           poster_path: rawPoster,
           added_by: user.id,
+          type: detectedType,
         }),
       });
 
