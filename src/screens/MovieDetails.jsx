@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useLocation } from 'react-router-dom'
 import { api, addFavoriteApi, fetchMovieReviews, errorMessage } from '../api.js'
 import { useLanguage } from '../context/useLanguage.js'
 import { useUser } from '../context/useUser.js'
@@ -9,6 +9,7 @@ import AddToGroupModel from '../components/AddToGroupModel.jsx'
 
 export default function MovieDetails() {
   const { id } = useParams()
+  const { pathname } = useLocation()
   const { locale, texts } = useLanguage()
   const { user } = useUser()
   const [movie, setMovie] = useState(null)
@@ -16,23 +17,24 @@ export default function MovieDetails() {
   const [reviews, setReviews] = useState([])
   const [reviewReload, setReviewReload] = useState(0)
 
-  // Tila näkyvien arvostelujen määrälle (alkuun 3)
   const [visibleCount, setVisibleCount] = useState(3)
 
   useEffect(() => {
     async function loadMovie() {
       try {
-        const response = await api.get(`/api/movies/${id}`, {
+        const isTv = pathname.startsWith('/tv')
+        const endpoint = isTv ? `/api/tv/${id}` : `/api/movies/${id}`
+        const response = await api.get(endpoint, {
           params: { language: locale },
         })
         setMovie(response.data)
       } catch (err) {
-        console.error('Virhe elokuvan latauksessa:', err)
+        console.error('Virhe tiedelatauksessa:', err)
       }
     }
 
     loadMovie()
-  }, [id, locale])
+  }, [id, pathname, locale])
 
   useEffect(() => {
     async function loadReviews() {
