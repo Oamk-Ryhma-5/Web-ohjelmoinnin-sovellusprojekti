@@ -18,33 +18,38 @@
 
 .site-header {
   background: var(--header);
-  border-bottom: 4px solid #d3a347;
-  color: white;
+  border-bottom: 1px solid var(--header-border);
+  color: var(--header-text);
 }
 
 .header-content {
   max-width: 1100px;
-  min-height: 68px;
+  min-height: 80px;
   margin: 0 auto;
   padding: 12px 20px;
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 24px;
   flex-wrap: wrap;
 }
 
 .site-header a {
-  color: white;
+  color: var(--header-text);
   text-decoration: none;
 }
 
 .site-header :focus-visible {
-  outline-color: #ffe1a2;
+  outline-color: var(--header-text);
 }
 
 .site-name {
-  font-size: 22px;
-  font-weight: bold;
+  font-family: 'Bodoni Moda', Georgia, serif;
+  font-size: 32px;
+  font-weight: 600;
+  font-optical-sizing: auto;
+  letter-spacing: -0.04em;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .main-nav {
@@ -79,16 +84,16 @@
 
 .language-buttons button {
   padding: 6px 8px;
-  border: 1px solid #b4cbdc;
+  border: 1px solid var(--header-border);
   border-radius: 3px;
   background: transparent;
-  color: white;
+  color: var(--header-text);
   font-size: 12px;
 }
 
 .language-buttons button[aria-pressed='true'] {
-  background: white;
-  color: #285e85;
+  background: var(--header-text);
+  color: var(--header);
 }
 
 /*Teema valikko*/
@@ -96,19 +101,20 @@
   width: auto;
   height: 34px;
   padding: 5px 8px;
-  border-color: #b4cbdc;
+  border-color: var(--header-border);
   background: var(--header);
-  color: white;
+  color: var(--header-text);
   font-size: 13px;
 }
 
 .header-actions .button {
-  border-color: #b4cbdc;
-  background: #356c95;
+  border-color: var(--header-text);
+  background: var(--header-text);
+  color: var(--header);
 }
 
 .header-actions .button:hover {
-  background: #1c4b6e;
+  background: #ffffff;
 }
 
 .account-link {
@@ -146,6 +152,14 @@
   gap: 18px;
 }
 
+.site-footer > a {
+  font-family: 'Bodoni Moda', Georgia, serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+}
+
 /* Painikkeet ja lomakkeet */
 .button {
   display: inline-flex;
@@ -153,10 +167,10 @@
   justify-content: center;
   min-height: 40px;
   padding: 8px 16px;
-  border: 1px solid #255a87;
-  border-radius: 3px;
-  background: #2d6da3;
-  color: white;
+  border: 1px solid var(--button-background);
+  border-radius: 5px;
+  background: var(--button-background);
+  color: var(--button-text);
   font-size: 14px;
   font-weight: 600;
   line-height: 1.4;
@@ -164,7 +178,8 @@
 }
 
 .button:hover {
-  background: #245781;
+  border-color: var(--button-hover);
+  background: var(--button-hover);
 }
 
 .button.secondary {
@@ -174,13 +189,13 @@
 }
 
 .button.secondary:hover {
-  background: var(--soft-blue);
+  background: var(--subtle);
 }
 
 .button.danger {
-  border-color: #a5342b;
-  background: #a5342b;
-  color: white;
+  border-color: var(--danger-background);
+  background: var(--danger-background);
+  color: var(--danger-text);
 }
 
 .button.danger:hover {
@@ -211,7 +226,7 @@
 .panel {
   padding: 22px;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 6px;
   background: var(--surface);
 }
 
@@ -327,8 +342,8 @@ input[readonly] {
 .home-search {
   padding: 20px;
   border: 1px solid var(--border);
-  border-radius: 3px;
-  background: var(--soft-blue);
+  border-radius: 6px;
+  background: var(--surface);
 }
 
 .home-search h1 {
@@ -381,8 +396,12 @@ input[readonly] {
   min-width: 0;
   overflow: hidden;
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: 6px;
   background: var(--surface);
+}
+
+.movie-card:hover {
+  border-color: var(--input-border);
 }
 
 .poster-link {
@@ -411,16 +430,16 @@ input[readonly] {
   top: 8px;
   right: 8px;
   padding: 3px 6px;
-  border: 1px solid #b99449;
-  border-radius: 2px;
-  background: #ffe1a2;
-  color: #4b390b;
+  border: 1px solid #55534d;
+  border-radius: 4px;
+  background: #111111;
+  color: #f7f5ec;
   font-size: 12px;
   font-weight: bold;
 }
 
 .movie-rating > span {
-  color: #785b13;
+  color: inherit;
 }
 
 .movie-info {
@@ -480,11 +499,85 @@ input[readonly] {
   max-width: 800px;
 }
 
+.movie-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.movie-actions .button {
+  width: 180px;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Ryhmien ja suosikkien pienet toiminnot käyttävät samaa ulkoasua. */
+.group-picker {
+  margin-top: 8px;
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.group-picker-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.group-picker-controls select {
+  flex: 1 1 150px;
+}
+
+.group-picker .button {
+  width: auto;
+  min-height: 34px;
+}
+
+.group-create-form {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.group-create-form input {
+  flex: 1 1 220px;
+}
+
+.group-list-item {
+  flex-wrap: wrap;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.group-list-item a {
+  overflow-wrap: anywhere;
+}
+
+.favorite-card {
+  background: var(--surface);
+}
+
+.movie-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 650px;
+}
+
 .movie-details-poster {
   width: 100%;
   border: 1px solid var(--border);
   border-radius: 3px;
-  background: #e4e8ed;
+  background: var(--subtle);
 }
 
 .status-message {
@@ -562,7 +655,7 @@ input[readonly] {
   align-items: end;
   gap: 12px;
   padding: 18px;
-  background: var(--soft-blue);
+  background: var(--subtle);
 }
 
 .search-form .form-field {
@@ -724,7 +817,7 @@ input[readonly] {
   }
 
   .site-name {
-    font-size: 20px;
+    font-size: 28px;
   }
 
   .header-actions {
@@ -742,7 +835,7 @@ input[readonly] {
     order: 3;
     width: 100%;
     padding-top: 6px;
-    border-top: 1px solid #6086a3;
+    border-top: 1px solid var(--header-border);
     gap: 24px;
   }
 

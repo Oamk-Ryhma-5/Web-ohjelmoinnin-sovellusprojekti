@@ -1,3 +1,12 @@
+/* Nimen kirjasin ladataan projektista. Muu teksti käyttää tavallista Arialia. */
+@font-face {
+  font-family: 'Bodoni Moda';
+  src: url('/fonts/bodoni-moda.ttf') format('truetype');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Yhteiset värit ja selaimen perusasetukset. */
 :root {
   font-family: Arial, Helvetica, sans-serif;
@@ -5,49 +14,57 @@
   background: var(--background);
   color-scheme: light;
   line-height: 1.5;
-  --background: #f3f5f7;
+  --background: #f7f6f2;
   --surface: #ffffff;
-  --border: #cdd4db;
-  --text: #252b33;
-  --muted: #58636e;
-  --accent: #2d6da3;
-  --soft-blue: #e8f1f8;
-  --header: #285e85;
-  --input-border: #a9b4be;
-  --subtle: #f0f2f4;
-  --genre: #406b3d;
+  --border: #d8d7d1;
+  --text: #202020;
+  --muted: #66645f;
+  --accent: #282828;
+  --header: #111111;
+  --header-text: #f7f5ec;
+  --header-border: #55534d;
+  --button-background: #242424;
+  --button-text: #ffffff;
+  --button-hover: #414141;
+  --danger-background: #a5342b;
+  --danger-text: #ffffff;
+  --input-border: #a8a69e;
+  --subtle: #eeede8;
+  --genre: #66645f;
   --error-background: #fff1ed;
   --error-text: #8f3328;
   --error-border: #d6a99b;
   --success-background: #edf6ec;
   --success-text: #2d602e;
   --success-border: #a5c3a2;
-  --summary-background: #fff8e8;
-  --summary-border: #dccba8;
+  --summary-background: #eeede8;
+  --summary-border: #d8d7d1;
 }
 
 /* Tumma tila vaihtaa vain värit. Samat komponentit toimivat molemmissa tiloissa. */
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --background: #171c22;
-  --surface: #232b34;
-  --border: #46525e;
-  --text: #edf1f5;
-  --muted: #bac4ce;
-  --accent: #95c9f0;
-  --soft-blue: #253848;
-  --header: #1d3d56;
-  --input-border: #738291;
-  --subtle: #303a45;
-  --genre: #accf9b;
+  --background: #121212;
+  --surface: #1c1c1c;
+  --border: #3a3935;
+  --text: #eeede8;
+  --muted: #b4b2aa;
+  --accent: #eeede8;
+  --header: #090909;
+  --button-background: #eeede8;
+  --button-text: #181818;
+  --button-hover: #ffffff;
+  --input-border: #74726b;
+  --subtle: #242424;
+  --genre: #b4b2aa;
   --error-background: #442b2a;
   --error-text: #ffc0b6;
   --error-border: #a56860;
   --success-background: #243c2b;
   --success-text: #b3deb7;
   --success-border: #688d6b;
-  --summary-background: #393324;
-  --summary-border: #847345;
+  --summary-background: #242424;
+  --summary-border: #3a3935;
 }
 
 * {
@@ -103,8 +120,8 @@ h3 {
 }
 
 ::selection {
-  background: #c5dcf0;
-  color: #172f43;
+  background: var(--text);
+  color: var(--background);
 }
 
 .visually-hidden {
