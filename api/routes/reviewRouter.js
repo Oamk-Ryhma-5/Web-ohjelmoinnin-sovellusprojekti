@@ -21,7 +21,7 @@ router.get('/all', async (req, res, next) => {
   }
 })
 
-// Hakee tietyn elokuvan tai sarjan kaikki arvostelut
+// Hakee tietyn elokuvan kaikki arvostelut
 router.get('/movie/:movieId', async (req, res, next) => {
   try {
     const { movieId } = req.params
@@ -128,7 +128,7 @@ router.post('/', auth, async (req, res, next) => {
   } catch (err) {
     if (err.code === '23505') {
       return res.status(409).json({
-        error: 'Olet jo arvostellut tämän kohteen'
+        error: 'Olet jo arvostellut tämän elokuvan'
       })
     }
 

@@ -4,8 +4,8 @@ import { addReviewApi, fetchMyReview, updateReviewApi, deleteReviewApi } from '.
 import { useLanguage } from '../context/useLanguage.js'
 
 export default function ReviewForm({ movie, onSaved }) {
-  const { pathname } = useLocation()
   const { texts } = useLanguage()
+  const { pathname } = useLocation()
   const [stars, setStars] = useState(3)
   const [text, setText] = useState('')
   const [preview, setPreview] = useState(null)
@@ -62,14 +62,15 @@ export default function ReviewForm({ movie, onSaved }) {
     try {
       setStatus('Tallennetaan...')
 
-      const detectedType = pathname.startsWith('/tv') ? 'tv' : 'movie'
+      const mediaType = pathname.startsWith('/tv') ? 'tv' : 'movie'
+      const mediaTitle = movie.title || movie.name || ''
 
       if (existingReview) {
         // Käyttäjällä on jo arvostelu, joten päivitetään se
         const updatedReview = await updateReviewApi(movie.id, {
           stars,
           reviewText: text.trim(),
-          type: detectedType,
+          type: mediaType,
         })
 
         setExistingReview(updatedReview)
@@ -81,11 +82,11 @@ export default function ReviewForm({ movie, onSaved }) {
       } else {
         // Käyttäjällä ei vielä ole arvostelua, joten luodaan uusi
         const newReview = await addReviewApi({
-          movieId: movie.id,
-          movieTitle: movie.title || movie.name,
+          movieId: String(movie.id),
+          movieTitle: mediaTitle,
           stars,
           reviewText: text.trim(),
-          type: detectedType,
+          type: mediaType,
         })
 
         setExistingReview(newReview)
