@@ -79,56 +79,55 @@ export default function Reviews() {
         <p className="status-message">{texts.noComments || 'Ei vielä yhtään arvostelua.'}</p>
       ) : (
         <section className="panel reviews-list-section" aria-labelledby="list-title">
-          <div className="reviews-container" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="reviews-container">
             {groupedReviews.map((group) => {
               const detailPath = `/${group.itemType}/${group.movieId}`
 
               return (
                 <article 
                   key={group.movieId} 
-                  className="review-group-card" 
-                  style={{ border: '1px solid #ddd', padding: '16px', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '16px' }}
+                  className="panel review-group-card"
                 >
                   {/* Elokuvan / Sarjan yhteistiedot ja posteri */}
-                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '12px' }}>
-                    <Link to={detailPath} style={{ textDecoration: 'none', color: 'inherit', flexShrink: 0 }}>
+                  <div className="review-group-header">
+                    <Link to={detailPath} className="review-poster-link">
                       {group.posterUrl ? (
                         <img 
                           src={group.posterUrl} 
                           alt={group.movieTitle} 
-                          style={{ width: '70px', height: '100px', objectFit: 'cover', borderRadius: '4px' }} 
+                          className="review-poster-img"
                         />
                       ) : (
-                        <div style={{ width: '70px', height: '100px', background: '#ddd', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', textAlign: 'center', borderRadius: '4px' }}>
+                        <div className="review-poster-missing">
                           {texts.posterMissing}
                         </div>
                       )}
                     </Link>
 
                     <div>
-                      <h3 style={{ margin: '0 0 4px 0' }}>
-                        <Link to={detailPath} style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <h3 className="review-movie-title">
+                        <Link to={detailPath} className="review-title-link">
                           {group.movieTitle}
                         </Link>
                       </h3>
-                      <p style={{ margin: 0, fontSize: '14px', color: '#666' }}>
+                      <p className="review-count-text">
                         Arvosteluja yhteensä: {group.reviews.length}
                       </p>
                     </div>
                   </div>
 
                   {/* Kyseisen kohteen kaikki käyttäjien arvostelut listattuna */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingLeft: '8px' }}>
+                  <div className="reviews-sublist">
                     {group.reviews.map((review) => (
-                      <div key={review.id} style={{ background: '#f9f9f9', padding: '10px', borderRadius: '6px' }}>
-                        <p style={{ margin: '0 0 4px 0', fontSize: '14px' }}>
+                      <div key={review.id} className="review-item-box">
+                        <p className="review-item-meta">
                           <strong>{review.username || 'Tuntematon'}</strong>{' '}
-                          <span aria-hidden="true" style={{ marginLeft: '8px' }}>
+                          <span aria-hidden="true" className="review-stars-span">
                             {'★'.repeat(review.stars)}{'☆'.repeat(5 - review.stars)}
                           </span> ({review.stars}/5)
                         </p>
-                        <p style={{ margin: '0 0 4px 0' }}>"{review.review_text}"</p>
-                        <small style={{ color: '#888' }}>{new Date(review.created_at).toLocaleDateString(locale)}</small>
+                        <p className="review-item-text">"{review.review_text}"</p>
+                        <small className="review-item-date">{new Date(review.created_at).toLocaleDateString(locale)}</small>
                       </div>
                     ))}
                   </div>
