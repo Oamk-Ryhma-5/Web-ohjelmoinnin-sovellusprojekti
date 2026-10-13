@@ -133,7 +133,7 @@ export default function ReviewForm({ movie, onSaved }) {
   if (existingReview && !editing) {
     return (
       <section className="panel review-form">
-        <h2>Oma arvostelusi</h2>
+        <h2>{texts.ownReview || 'Oma arvostelusi'}</h2>
 
         <p className="review-preview-stars">
           <span aria-hidden="true">
@@ -147,7 +147,7 @@ export default function ReviewForm({ movie, onSaved }) {
           {existingReview.review_text}
         </p>
 
-        <div>
+        <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
           <button
             className="button"
             type="button"
@@ -164,11 +164,11 @@ export default function ReviewForm({ movie, onSaved }) {
             type="button"
             onClick={deleteOwnReview}
           >
-            {texts.delete || 'Poista arvostelu'}
+            {texts.delete || texts.deleteReview || 'Poista arvostelu'}
           </button>
         </div>
 
-        {status && <p>{status}</p>}
+        {status && <p style={{ marginTop: '12px' }}>{status}</p>}
       </section>
     )
   }
