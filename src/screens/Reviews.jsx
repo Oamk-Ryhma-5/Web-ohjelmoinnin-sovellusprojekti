@@ -66,73 +66,76 @@ export default function Reviews() {
   }, [locale])
 
   if (loading) {
-    return <p>{texts.loading}</p>
+    return <p className="status-message">{texts.loading}</p>
   }
 
   return (
     <section className="reviews-page" aria-labelledby="reviews-title">
       <header className="page-heading">
         <h1 id="reviews-title">{texts.reviews}</h1>
+        <p>{texts.reviewsPageDescription || 'Katso muiden käyttäjien arvosteluja elokuvista ja sarjoista.'}</p>
       </header>
 
       {groupedReviews.length === 0 ? (
         <p className="status-message">{texts.noComments || 'Ei vielä yhtään arvostelua.'}</p>
       ) : (
-        <section className="panel reviews-list-section" aria-labelledby="list-title">
-          <div className="reviews-container">
-            {groupedReviews.map((group) => {
-              const detailPath = `/${group.itemType}/${group.movieId}`
+        <div className="reviews-list-container">
+          {groupedReviews.map((group) => {
+            const detailPath = `/${group.itemType}/${group.movieId}`
 
-              return (
-                <article 
-                  key={group.movieId} 
-                  className="panel review-group-card"
-                >
-                  {/* Elokuvan / Sarjan yhteistiedot ja posteri */}
-                  <div className="review-group-header">
-                    <Link to={detailPath} className="review-poster-link">
-                      {group.posterUrl ? (
-                        <img 
-                          src={group.posterUrl} 
-                          alt={group.movieTitle} 
-                          className="review-poster-img"
-                        />
-                      ) : (
-                        <div className="review-poster-missing">
-                          {texts.posterMissing}
-                        </div>
-                      )}
-                    </Link>
-
-                    <div>
-                      <h3 className="review-movie-title">
-                        <Link to={detailPath}>
-                          {group.movieTitle}
-                        </Link>
-                      </h3>
+            return (
+              <article key={group.movieId} className="panel review-group-card">
+                {/* Elokuvan / Sarjan posteri */}
+                <Link to={detailPath} className="review-poster-link">
+                  {group.posterUrl ? (
+                    <img 
+                      src={group.posterUrl} 
+                      alt={group.movieTitle} 
+                      className="review-poster-img"
+                    />
+                  ) : (
+                    <div className="review-poster-missing">
+                      {texts.posterMissing || 'Ei julistetta'}
                     </div>
-                  </div>
+                  )}
+                </Link>
 
-                  {/* Kyseisen kohteen kaikki käyttäjien arvostelut listattuna */}
+                {/* Otsikko ja kyseisen kohteen arvostelut */}
+                <div style={{ minWidth: 0 }}>
+                  <h3 className="review-movie-title">
+                    <Link to={detailPath}>
+                      {group.movieTitle}
+                    </Link>
+                  </h3>
+
                   <div className="reviews-sublist">
                     {group.reviews.map((review) => (
                       <div key={review.id} className="review-item-box">
-                        <p className="review-item-meta">
-                          <strong>{review.username || 'Tuntematon'}</strong>{' '}
-                          <span aria-hidden="true" className="review-stars-span">
-                            {'★'.repeat(review.stars)}{'☆'.repeat(5 - review.stars)}
-                          </span> ({review.stars}/5)
+                        <div className="review-item-header">
+                          <span className="review-item-username">
+                            {review.username || 'Tuntematon'}
+                          </span>
+                          <div className="review-item-stars-wrapper">
+                            <span aria-hidden="true" className="review-item-stars">
+                              {'★'.repeat(review.stars)}{'☆'.repeat(5 - review.stars)}
+                            </span>
+                            <span className="muted" style={{ fontSize: '12px' }}>({review.stars}/5)</span>
+                          </div>
+                        </div>
+                        <p className="review-item-text">
+                          "{review.review_text}"
                         </p>
-                        <p className="review-item-text">"{review.review_text}"</p>
-                        <small className="review-item-date">{new Date(review.created_at).toLocaleDateString(locale)}</small>
+                        <small className="muted" style={{ fontSize: '12px' }}>
+                          {new Date(review.created_at).toLocaleDateString(locale)}
+                        </small>
                       </div>
                     ))}
                   </div>
-                </article>
-              )
-            })}
-          </div>
-        </section>
+                </div>
+              </article>
+            )
+          })}
+        </div>
       )}
     </section>
   )

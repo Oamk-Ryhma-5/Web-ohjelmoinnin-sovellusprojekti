@@ -633,6 +633,101 @@ input[readonly] {
   white-space: pre-wrap;
 }
 
+/* Arvostelusivun uudet tyylit */
+.reviews-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.review-group-card {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.review-poster-link {
+  display: block;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.review-poster-img,
+.review-poster-missing {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+}
+
+.review-poster-missing {
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  background: var(--subtle);
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.review-movie-title {
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.review-movie-title a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.review-movie-title a:hover {
+  text-decoration: underline;
+}
+
+.reviews-sublist {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.review-item-box {
+  padding: 12px 14px;
+  background: var(--subtle);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.review-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.review-item-username {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.review-item-stars-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.review-item-stars {
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.review-item-text {
+  margin: 0 0 6px 0;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
 /* Hakusivu ja käyttäjäsivut */
 .page-heading {
   margin-bottom: 22px;
@@ -885,13 +980,22 @@ input[readonly] {
   }
 
   .movie-details {
-  grid-template-columns: 1fr;
-  gap: 20px;
-}
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
 
-.movie-details-poster {
-  max-width: 260px;
-}
+  .movie-details-poster {
+    max-width: 260px;
+  }
+
+  .review-group-card {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .review-poster-link {
+    max-width: 140px;
+  }
 
   .movie-info {
     padding: 10px;
