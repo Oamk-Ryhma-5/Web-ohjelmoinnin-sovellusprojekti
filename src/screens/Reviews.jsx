@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { api } from '../api.js'
 import { useLanguage } from '../context/useLanguage.js'
 
@@ -17,17 +18,21 @@ export default function Reviews() {
 
         const enrichedReviews = await Promise.all(
           rawReviews.map(async (review) => {
+            const itemType = review.type === 'tv' ? 'tv' : 'movie'
+            const endpoint = itemType === 'tv' ? `/api/tv/${review.movie_id}` : `/api/movies/${review.movie_id}`
+
             try {
-              const movieRes = await api.get(`/api/movies/${review.movie_id}`, {
+              const movieRes = await api.get(endpoint, {
                 params: { language: locale },
               })
               return {
                 ...review,
+                itemType,
                 posterUrl: movieRes.data.posterUrl || movieRes.data.poster_path || '',
-                movieTitle: movieRes.data.title || review.movie_title
+                movieTitle: movieRes.data.title || movieRes.data.name || review.movie_title
               }
             } catch {
-              return { ...review, posterUrl: '', movieTitle: review.movie_title }
+              return { ...review, itemType, posterUrl: '', movieTitle: review.movie_title }
             }
           })
         )
@@ -60,37 +65,47 @@ export default function Reviews() {
       ) : (
         <section className="panel reviews-list-section" aria-labelledby="list-title">
           <div className="reviews-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {visibleReviews.map((review) => (
-              <article 
-                key={review.id} 
-                className="review-card" 
-                style={{ display: 'flex', gap: '16px', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '16px' }}
-              >
-                {review.posterUrl ? (
-                  <img 
-                    src={review.posterUrl} 
-                    alt={review.movieTitle} 
-                    style={{ width: '80px', height: '120px', objectFit: 'cover', borderRadius: '4px' }} 
-                  />
-                ) : (
-                  <div style={{ width: '80px', height: '120px', background: '#ddd', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', textAlign: 'center', borderRadius: '4px' }}>
-                    {texts.posterMissing}
-                  </div>
-                )}
+            {visibleReviews.map((review) => {
+              const detailPath = `/${review.itemType || 'movie'}/${review.movie_id}`
 
-                <div style={{ flex: 1 }}>
-                  <h3 style={{ margin: '0 0 4px 0' }}>{review.movieTitle}</h3>
-                  <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#666' }}>
-                    {texts.owner ? 'Arvostellut:' : 'Reviewed by:'} <strong>{review.username || 'Tuntematon'}</strong>
-                  </p>
-                  <p className="review-card-stars" aria-hidden="true" style={{ margin: '0 0 8px 0' }}>
-                    {'★'.repeat(review.stars)}{'☆'.repeat(5 - review.stars)} ({review.stars}/5)
-                  </p>
-                  <p className="review-card-text" style={{ margin: '0 0 8px 0' }}>"{review.review_text}"</p>
-                  <small>{new Date(review.created_at).toLocaleDateString(locale)}</small>
-                </div>
-              </article>
-            ))}
+              return (
+                <article 
+                  key={review.id} 
+                  className="review-card" 
+                  style={{ display: 'flex', gap: '16px', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '16px' }}
+                >
+                  <Link to={detailPath} style={{ textDecoration: 'none', color: 'inherit', flexShrink: 0 }}>
+                    {review.posterUrl ? (
+                      <img 
+                        src={review.posterUrl} 
+                        alt={review.movieTitle} 
+                        style={{ width: '80px', height: '120px', objectFit: 'cover', borderRadius: '4px' }} 
+                      />
+                    ) : (
+                      <div style={{ width: '80px', height: '120px', background: '#ddd', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', textAlign: 'center', borderRadius: '4px' }}>
+                        {texts.posterMissing}
+                      </div>
+                    )}
+                  </Link>
+
+                  <div style={{ flex: 1 }}>
+                    <h3 style={{ margin: '0 0 4px 0' }}>
+                      <Link to={detailPath} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        {review.movieTitle}
+                      </Link>
+                    </h3>
+                    <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#666' }}>
+                      {texts.owner ? 'Arvostellut:' : 'Reviewed by:'} <strong>{review.username || 'Tuntematon'}</strong>
+                    </p>
+                    <p className="review-card-stars" aria-hidden="true" style={{ margin: '0 0 8px 0' }}>
+                      {'★'.repeat(review.stars)}{'☆'.repeat(5 - review.stars)} ({review.stars}/5)
+                    </p>
+                    <p className="review-card-text" style={{ margin: '0 0 8px 0' }}>"{review.review_text}"</p>
+                    <small>{new Date(review.created_at).toLocaleDateString(locale)}</small>
+                  </div>
+                </article>
+              )
+            })}
           </div>
 
           {visibleCount < reviewsList.length && (

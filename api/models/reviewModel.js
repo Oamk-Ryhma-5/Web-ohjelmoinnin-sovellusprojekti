@@ -1,11 +1,12 @@
 import { pool } from './db.js'
 
-export const addReview = async (accountId, movieId, movieTitle, stars, reviewText) => {
+export const addReview = async (accountId, movieId, movieTitle, stars, reviewText, type = 'movie') => {
+    const mediaType = type === 'tv' ? 'tv' : 'movie'
     const result = await pool.query(
-        `INSERT INTO reviews (account_id, movie_id, movie_title, stars, review_text)
-        VALUES ($1, $2, $3, $4, $5)
+        `INSERT INTO reviews (account_id, movie_id, movie_title, stars, review_text, type)
+        VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *`,
-        [Number(accountId), String(movieId), movieTitle || '', Number(stars), reviewText]
+        [Number(accountId), String(movieId), movieTitle || '', Number(stars), reviewText, mediaType]
     )
     return result.rows[0]
 }
@@ -49,13 +50,14 @@ export const getAllReviews = async () => {
     return result.rows
 }
 
-export const updateReview = async (accountId, movieId, stars, reviewText) => {
+export const updateReview = async (accountId, movieId, stars, reviewText, type = 'movie') => {
+    const mediaType = type === 'tv' ? 'tv' : 'movie'
     const result = await pool.query(
         `UPDATE reviews
-        SET stars = $1, review_text = $2
-        WHERE account_id = $3 AND movie_id = $4
+        SET stars = $1, review_text = $2, type = $3
+        WHERE account_id = $4 AND movie_id = $5
         RETURNING *`,
-        [Number(stars), reviewText, Number(accountId), String(movieId)]
+        [Number(stars), reviewText, mediaType, Number(accountId), String(movieId)]
     )
     return result.rows[0]
 }

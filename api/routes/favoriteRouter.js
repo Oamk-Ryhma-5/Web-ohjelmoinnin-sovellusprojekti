@@ -23,13 +23,14 @@ router.post('/', async (req, res, next) => {
       return res.status(401).json({ error: 'Käyttäjä-ID puuttuu' })
     }
 
-    const { movieId, movieTitle, posterPath } = req.body
+    const { movieId, movieTitle, posterPath, type } = req.body
 
     if (!movieId) {
       return res.status(400).json({ error: 'Elokuvan ID (movieId) puuttuu' })
     }
 
-    const newFavorite = await addFavorite(accountId, movieId, movieTitle, posterPath)
+    const mediaType = type === 'tv' ? 'tv' : 'movie'
+    const newFavorite = await addFavorite(accountId, movieId, movieTitle, posterPath, mediaType)
 
     res.status(201).json(newFavorite)
   } catch (err) {

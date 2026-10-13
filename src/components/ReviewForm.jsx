@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { addReviewApi, fetchMyReview, updateReviewApi, deleteReviewApi } from '../api.js'
 import { useLanguage } from '../context/useLanguage.js'
 
 export default function ReviewForm({ movie, onSaved }) {
+  const { pathname } = useLocation()
   const { texts } = useLanguage()
   const [stars, setStars] = useState(3)
   const [text, setText] = useState('')
@@ -60,11 +62,14 @@ export default function ReviewForm({ movie, onSaved }) {
     try {
       setStatus('Tallennetaan...')
 
+      const detectedType = pathname.startsWith('/tv') ? 'tv' : 'movie'
+
       if (existingReview) {
         // Käyttäjällä on jo arvostelu, joten päivitetään se
         const updatedReview = await updateReviewApi(movie.id, {
           stars,
           reviewText: text.trim(),
+          type: detectedType,
         })
 
         setExistingReview(updatedReview)
@@ -77,9 +82,10 @@ export default function ReviewForm({ movie, onSaved }) {
         // Käyttäjällä ei vielä ole arvostelua, joten luodaan uusi
         const newReview = await addReviewApi({
           movieId: movie.id,
-          movieTitle: movie.title,
+          movieTitle: movie.title || movie.name,
           stars,
           reviewText: text.trim(),
+          type: detectedType,
         })
 
         setExistingReview(newReview)
