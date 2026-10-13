@@ -22,25 +22,72 @@ export default function MovieList({ url, type = 'movie' }) {
       setLoading(true)
       setError(null)
       try {
-        const [movieResponse, genreResponse] = await Promise.all([
-          api.get(url, {
-            params: { page, language: locale },
-            signal: controller.signal,
-            // Nimihaku ja genre yhdessä voivat lukea useita TMDB-sivuja.
-            timeout: 60000,
-          }),
-          api.get('/api/genres', { params: { type, language: locale }, signal: controller.signal }),
-        ])
+        let movieResponseData = { results: [], nextPage: null }
+        let genreResponseData = { genres: [] }
+
+        const isAll = type === 'all' || (url && url.includes('type=all'))
+
+        if (isAll) {
+          // Jos tyyppi on 'all', tehdään erilliset haut sekä elokuville että sarjoille
+          const movieUrl = url.replace('type=all', 'type=movie')
+          const tvUrl = url.replace('type=all', 'type=tv')
+
+          const [resMovie, resTv, resGenre] = await Promise.all([
+            api.get(movieUrl, {
+              params: { page, language: locale },
+              signal: controller.signal,
+              timeout: 60000,
+            }),
+            api.get(tvUrl, {
+              params: { page, language: locale },
+              signal: controller.signal,
+              timeout: 60000,
+            }),
+            api.get('/api/genres', {
+              params: { type: 'movie', language: locale },
+              signal: controller.signal,
+            }),
+          ])
+
+          const combinedResults = [
+            ...(resMovie.data.results || []),
+            ...(resTv.data.results || []),
+          ]
+
+          movieResponseData = {
+            results: combinedResults,
+            nextPage: resMovie.data.nextPage || resTv.data.nextPage,
+          }
+          genreResponseData = resGenre.data
+        } else {
+          const [movieResponse, genreResponse] = await Promise.all([
+            api.get(url, {
+              params: { page, language: locale },
+              signal: controller.signal,
+              timeout: 60000,
+            }),
+            api.get('/api/genres', {
+              params: { type, language: locale },
+              signal: controller.signal,
+            }),
+          ])
+          movieResponseData = movieResponse.data
+          genreResponseData = genreResponse.data
+        }
+
         if (controller.signal.aborted) return
+
         setMovies((current) => {
           const allMovies =
-            page === 1 ? movieResponse.data.results : [...current, ...movieResponse.data.results]
+            page === 1
+              ? movieResponseData.results
+              : [...current, ...movieResponseData.results]
           return allMovies.filter(
             (movie, index) => allMovies.findIndex((item) => item.id === movie.id) === index,
           )
         })
-        setGenres(genreResponse.data.genres)
-        setNextPage(movieResponse.data.nextPage)
+        setGenres(genreResponseData.genres || [])
+        setNextPage(movieResponseData.nextPage)
       } catch (error) {
         if (!controller.signal.aborted) setError(error)
       } finally {
@@ -56,7 +103,7 @@ export default function MovieList({ url, type = 'movie' }) {
     <div aria-busy={loading}>
       <div className="movie-grid">
         {movies.map((movie) => (
-          <MovieCard key={movie.id} movie={movie} genres={genres} />
+          <MovieCard key={`${movie.media_type || type}-${movie.id}`} movie={movie} genres={genres} />
         ))}
       </div>
       {loading && (
