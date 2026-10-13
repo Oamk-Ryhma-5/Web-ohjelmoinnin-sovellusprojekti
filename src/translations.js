@@ -1,4 +1,4 @@
-// Sivun omat tekstit ovat tässä. Elokuvien käännökset tulevat TMDB:stä.[cite: 5]
+// Sivun omat tekstit ovat tässä. Elokuvien käännökset tulevat TMDB:stä.
 export const translations = {
   fi: {
     theaters: 'Teattereissa',
@@ -84,6 +84,7 @@ export const translations = {
     type: 'Sisältö',
     movies: 'Elokuvat',
     series: 'Sarjat',
+    allTypes: 'Kaikki (Elokuvat ja sarjat)',
     name: 'Nimi',
     year: 'Julkaisuvuosi',
     firstYear: 'Ensimmäinen esitysvuosi',
@@ -258,6 +259,7 @@ export const translations = {
     type: 'Type',
     movies: 'Movies',
     series: 'TV shows',
+    allTypes: 'All (Movies and TV shows)',
     name: 'Title',
     year: 'Release year',
     firstYear: 'First air year',
@@ -432,6 +434,7 @@ export const translations = {
     type: 'Innehåll',
     movies: 'Filmer',
     series: 'Serier',
+    allTypes: 'Alla (Filmer och serier)',
     name: 'Titel',
     year: 'Utgivningsår',
     firstYear: 'Första sändningsår',
@@ -606,6 +609,7 @@ export const translations = {
     type: 'Segh',
     movies: 'mopmey',
     series: "se'esjeq",
+    allTypes: "hoch (mopmey se'esjeq je)",
     name: 'pong',
     year: 'DIS',
     firstYear: "wa'DIch DIS",
