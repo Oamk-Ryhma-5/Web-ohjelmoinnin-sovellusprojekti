@@ -278,6 +278,7 @@ export default function GroupDetail() {
                 : null;
 
               const targetMovieId = movie.movie_id || movie.id;
+              const itemType = movie.type || 'movie';
 
               return (
                 <div
@@ -296,7 +297,7 @@ export default function GroupDetail() {
                   }}
                 >
                   <Link 
-                    to={`/movie/${targetMovieId}`} 
+                    to={`/${itemType}/${targetMovieId}`} 
                     style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
                   >
                     {posterUrl ? (
