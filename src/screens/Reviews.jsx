@@ -95,10 +95,10 @@ export default function Reviews() {
                         <img 
                           src={group.posterUrl} 
                           alt={group.movieTitle} 
-                          style={{ width: '50px', height: '75px', objectFit: 'cover', borderRadius: '4px' }}
+                          style={{ width: '70px', height: '100px', objectFit: 'cover', borderRadius: '4px' }}
                         />
                       ) : (
-                        <div style={{ width: '50px', height: '75px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', textAlign: 'center', borderRadius: '4px', background: 'rgba(0,0,0,0.1)' }}>
+                        <div style={{ width: '70px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', textAlign: 'center', borderRadius: '4px', background: 'rgba(0,0,0,0.1)' }}>
                           {texts.posterMissing}
                         </div>
                       )}
