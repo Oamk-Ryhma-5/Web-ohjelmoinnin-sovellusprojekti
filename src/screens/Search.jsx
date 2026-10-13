@@ -15,7 +15,7 @@ function SearchForm({ parameters }) {
   const { texts, language, locale } = useLanguage()
   
   const paramType = parameters.get('type')
-  const initialType = paramType === 'tv' || paramType === 'all' ? paramType : 'movie'
+  const initialType = paramType === 'tv' ? 'tv' : 'movie'
 
   const [type, setType] = useState(initialType)
   const [query, setQuery] = useState(parameters.get('q') || '')
@@ -31,9 +31,8 @@ function SearchForm({ parameters }) {
       setGenres([])
       setError(null)
       try {
-        const genreType = type === 'all' ? 'movie' : type
         const response = await api.get('/api/genres', {
-          params: { type: genreType, language: locale },
+          params: { type, language: locale },
           signal: controller.signal,
         })
         if (!controller.signal.aborted) setGenres(response.data.genres)
@@ -50,7 +49,7 @@ function SearchForm({ parameters }) {
     setParameters({ type, q: query.trim(), year, genre })
   }
 
-  const submittedType = parameters.get('type') === 'tv' || parameters.get('type') === 'all' ? parameters.get('type') : 'movie'
+  const submittedType = parameters.get('type') === 'tv' ? 'tv' : 'movie'
   
   const filters = new URLSearchParams({
     type: submittedType,
@@ -77,7 +76,6 @@ function SearchForm({ parameters }) {
               setGenre('')
             }}
           >
-            <option value="all">{texts.allTypes || 'Kaikki (Elokuvat ja sarjat)'}</option>
             <option value="movie">{texts.movies}</option>
             <option value="tv">{texts.series}</option>
           </select>
