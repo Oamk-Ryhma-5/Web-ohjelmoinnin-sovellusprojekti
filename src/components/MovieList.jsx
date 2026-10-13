@@ -25,12 +25,13 @@ export default function MovieList({ url, type = 'movie' }) {
         let movieResponseData = { results: [], nextPage: null }
         let genreResponseData = { genres: [] }
 
-        const isAll = type === 'all' || (url && url.includes('type=all'))
+        // Tarkistetaan varmasti, onko kyseessä "all"-haku joko propseista tai URL-osoitteesta
+        const isAll = type === 'all' || (url && (url.includes('type=all') || url.includes('type%3Dall')))
 
         if (isAll) {
-          // Jos tyyppi on 'all', tehdään erilliset haut sekä elokuville että sarjoille
-          const movieUrl = url.replace('type=all', 'type=movie')
-          const tvUrl = url.replace('type=all', 'type=tv')
+          // Luodaan erilliset url-osoitteet elokuville ja sarjoille korvaamalla type=all (tai tyhjennetään tyyppi jos tarpeen)
+          const movieUrl = url.replace(/type=all/g, 'type=movie').replace(/type%3Dall/g, 'type=movie')
+          const tvUrl = url.replace(/type=all/g, 'type=tv').replace(/type%3Dall/g, 'type=tv')
 
           const [resMovie, resTv, resGenre] = await Promise.all([
             api.get(movieUrl, {
