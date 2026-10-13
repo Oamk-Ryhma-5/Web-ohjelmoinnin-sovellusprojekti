@@ -55,12 +55,12 @@ CREATE TABLE IF NOT EXISTS favorites (
     movie_id VARCHAR(100) NOT NULL,
     movie_title VARCHAR(255),
     poster_path VARCHAR(255),
-    type VARCHAR(10) DEFAULT 'movie',
+    type VARCHAR(50) DEFAULT 'movie',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(account_id, movie_id)
 );
 
--- Arvostelut - Mukana updated_at-sarake, joka toimii nyt suoraan myös koodin kanssa
+-- Arvostelut
 CREATE TABLE IF NOT EXISTS reviews (
     id SERIAL PRIMARY KEY,
     account_id INT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     movie_title VARCHAR(255) NOT NULL,
     stars INT NOT NULL CHECK (stars BETWEEN 1 AND 5),
     review_text VARCHAR(2000) NOT NULL,
-    type VARCHAR(10) DEFAULT 'movie',
+    type VARCHAR(50) DEFAULT 'movie',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(account_id, movie_id)
@@ -103,7 +103,6 @@ CREATE TABLE IF NOT EXISTS group_movies (
     movie_title VARCHAR(255) NOT NULL,
     poster_path VARCHAR(255),
     added_by INT REFERENCES app_users(id) ON DELETE SET NULL,
-    type VARCHAR(10) DEFAULT 'movie',
     added_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(group_id, movie_id)
 );
