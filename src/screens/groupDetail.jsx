@@ -78,7 +78,7 @@ export default function GroupDetail() {
         body: JSON.stringify({ user_id: user.id })
       });
       if (response.ok) {
-        alert(texts?.pendingRequest || 'Liittymispyyntösi odottaa ryhmän omistajan hyväksyntää.');
+        alert(texts.pendingRequest);
         fetchMembers();
       }
     } catch (error) {
@@ -154,7 +154,7 @@ export default function GroupDetail() {
         );
       } else {
         const errData = await response.json();
-        alert(errData.error || texts?.errors?.SERVER_ERROR || 'Elokuvan poisto epäonnistui.');
+        alert(errData.error || texts.errors?.SERVER_ERROR || 'Elokuvan poisto epäonnistui.');
       }
     } catch (error) {
       console.error('Virhe elokuvaa poistettaessa:', error);
@@ -162,12 +162,12 @@ export default function GroupDetail() {
   }
 
   if (loading) {
-    return <div className="container"><p>{texts?.loading || 'Ladataan…'}</p></div>;
+    return <div className="container"><p>{texts.loading}</p></div>;
   }
 
   return (
     <div className="container" style={{ padding: '1rem' }}>
-      <h1>{group ? group.name : `${texts?.group || 'Ryhmä'} #${id}`}</h1>
+      <h1>{group ? group.name : `${texts.group} #${id}`}</h1>
 
       {/* Liittymisnappi kirjautuneelle käyttäjälle */}
       {user && !isOwner && !userMembership && (
@@ -175,7 +175,7 @@ export default function GroupDetail() {
           onClick={handleJoinRequest}
           style={{ background: 'var(--button-background)', color: 'var(--button-text)', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', marginBottom: '1rem' }}
         >
-          {texts?.sendJoinRequest || 'Lähetä liittymispyyntö'}
+          {texts.sendJoinRequest}
         </button>
       )}
 
@@ -185,26 +185,26 @@ export default function GroupDetail() {
           onClick={handleLeaveGroup}
           style={{ background: 'var(--danger-background)', color: 'var(--danger-text)', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', marginBottom: '1rem' }}
         >
-          {texts?.leaveGroup || 'Poistu ryhmästä'}
+          {texts.leaveGroup}
         </button>
       )}
 
       {userMembership && userMembership.status === 'pending' && (
         <p style={{ fontStyle: 'italic', color: 'var(--muted)' }}>
-          {texts?.pendingRequest || '⏳ Liittymispyyntösi odottaa ryhmän omistajan hyväksyntää.'}
+          {texts.pendingRequest}
         </p>
       )}
 
       {/* Ryhmän jäsenet - Näkyy vain hyväksytyille jäsenille ja omistajalle */}
       <section className="group-members-section" style={{ marginTop: '1.5rem', background: 'var(--subtle)', padding: '1rem', borderRadius: '8px' }}>
-        <h2>{texts?.members || 'Jäsenet 👥'}</h2>
+        <h2>{texts.members}</h2>
         
         {!user ? (
-          <p>{texts?.loginToJoin || 'Kirjaudu sisään liittyäksesi ryhmään.'}</p>
+          <p>{texts.loginToJoin}</p>
         ) : !isAcceptedMember ? (
-          <p>{texts?.groupOnlyForMembers || '🔒 Tämän ryhmän sisältö on vain hyväksytyille jäsenille.'}</p>
+          <p>{texts.groupOnlyForMembers}</p>
         ) : members.filter(m => m.status === 'accepted').length === 0 ? (
-          <p>{texts?.noAcceptedMembers || 'Ryhmällä ei ole vielä hyväksyttyjä jäseniä.'}</p>
+          <p>{texts.noAcceptedMembers}</p>
         ) : (
           <ul style={{ listStyle: 'none', padding: 0, margin: '0.5rem 0 1rem 0', display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
             {members.filter(m => m.status === 'accepted').map((member) => (
@@ -221,12 +221,12 @@ export default function GroupDetail() {
                   gap: '0.5rem'
                 }}
               >
-                👤 {member.username} {String(member.user_id) === String(group.owner_id) && `(${texts?.owner || 'Omistaja'})`}
+                👤 {member.username} {String(member.user_id) === String(group.owner_id) && `(${texts.owner})`}
                 {/* Jäsenen poistonappi näytetään omistajalle */}
                 {isOwner && String(member.user_id) !== String(group.owner_id) && (
                   <button
                     onClick={() => handleRemoveMember(member.user_id)}
-                    title={texts?.removeFromGroup || 'Poista ryhmästä'}
+                    title={texts.removeFromGroup}
                     style={{ background: 'var(--danger-background)', color: 'var(--danger-text)', border: 'none', borderRadius: '50%', width: '18px', height: '18px', fontSize: '10px', cursor: 'pointer' }}
                   >
                     ✕
@@ -240,7 +240,7 @@ export default function GroupDetail() {
         {/* Odottavat pyynnöt näytetään vain omistajalle */}
         {isOwner && members.some(m => m.status === 'pending') && (
           <div style={{ marginTop: '1rem', borderTop: '1px solid var(--border)', paddingTop: '0.5rem' }}>
-            <h3>{texts?.pendingRequestsHeader || 'Odottavat liittymispyynnöt 📩'}</h3>
+            <h3>{texts.pendingRequestsHeader}</h3>
             <ul style={{ listStyle: 'none', padding: 0 }}>
               {members.filter(m => m.status === 'pending').map((reqUser) => (
                 <li key={reqUser.user_id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
@@ -249,13 +249,13 @@ export default function GroupDetail() {
                     onClick={() => handleRequestAction(reqUser.user_id, 'accept')}
                     style={{ background: 'var(--button-background)', color: 'var(--button-text)', border: 'none', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer' }}
                   >
-                    {texts?.accept || 'Hyväksy'}
+                    {texts.accept}
                   </button>
                   <button
                     onClick={() => handleRequestAction(reqUser.user_id, 'reject')}
                     style={{ background: 'var(--danger-background)', color: 'var(--danger-text)', border: 'none', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer' }}
                   >
-                    {texts?.reject || 'Hylkää'}
+                    {texts.reject}
                   </button>
                 </li>
               ))}
@@ -266,14 +266,14 @@ export default function GroupDetail() {
 
       {/* Ryhmän elokuvat ja julisteet - Näkyy vain hyväksytyille jäsenille */}
       <section className="group-movies-section" style={{ marginTop: '2rem' }}>
-        <h2>{texts?.groupMovies || 'Ryhmän elokuvat 🎬'}</h2>
+        <h2>{texts.groupMovies}</h2>
 
         {!user ? (
-          <p>{texts?.loginToViewMovies || 'Kirjaudu sisään nähdäksesi ryhmän elokuvat.'}</p>
+          <p>{texts.loginToJoin}</p>
         ) : !isAcceptedMember ? (
-          <p>{texts?.groupOnlyForMembers || '🔒 Tämän ryhmän elokuvat ovat näkyvissä vain hyväksytyille jäsenille.'}</p>
+          <p>{texts.groupOnlyForMembers}</p>
         ) : movies.length === 0 ? (
-          <p>{texts?.noGroupMovies || 'Ryhmälle ei ole vielä lisätty elokuvia.'}</p>
+          <p>{texts.noGroupMovies}</p>
         ) : (
           <div
             className="movies-grid"
@@ -339,7 +339,7 @@ export default function GroupDetail() {
                           fontSize: '0.85rem'
                         }}
                       >
-                        {texts?.posterMissing || 'Juliste puuttuu'}
+                        {texts.posterMissing}
                       </div>
                     )}
 
@@ -371,7 +371,7 @@ export default function GroupDetail() {
                         width: '100%'
                       }}
                     >
-                      {texts?.delete || 'Poista'}
+                      {texts.delete}
                     </button>
                   )}
                 </div>

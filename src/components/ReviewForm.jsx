@@ -60,7 +60,7 @@ export default function ReviewForm({ movie, onSaved }) {
   // Tallentaa uuden arvostelun tai päivittää olemassa olevan
   async function saveReview() {
     try {
-      setStatus('Tallennetaan...')
+      setStatus(texts.loading || 'Tallennetaan...')
 
       const mediaType = pathname.startsWith('/tv') ? 'tv' : 'movie'
       const mediaTitle = movie.title || movie.name || ''
@@ -156,7 +156,7 @@ export default function ReviewForm({ movie, onSaved }) {
               setStatus('')
             }}
           >
-            Muokkaa
+            {texts.edit || 'Muokkaa'}
           </button>
 
           <button
@@ -164,7 +164,7 @@ export default function ReviewForm({ movie, onSaved }) {
             type="button"
             onClick={deleteOwnReview}
           >
-            Poista arvostelu
+            {texts.delete || 'Poista arvostelu'}
           </button>
         </div>
 
@@ -177,7 +177,7 @@ export default function ReviewForm({ movie, onSaved }) {
   return (
     <section className="panel review-form">
       <h2>
-        {existingReview ? 'Muokkaa arvostelua' : texts.writeReview}
+        {existingReview ? (texts.editReview || 'Muokkaa arvostelua') : texts.writeReview}
       </h2>
 
       <form onSubmit={showPreview}>
@@ -240,7 +240,7 @@ export default function ReviewForm({ movie, onSaved }) {
               setStatus('')
             }}
           >
-            Peruuta
+            {texts.cancel}
           </button>
         )}
       </form>
@@ -270,8 +270,8 @@ export default function ReviewForm({ movie, onSaved }) {
             onClick={saveReview}
           >
             {existingReview
-              ? 'Tallenna muutokset'
-              : 'Tallenna arvostelu'}
+              ? (texts.saveChanges || 'Tallenna muutokset')
+              : (texts.saveReview || 'Tallenna arvostelu')}
           </button>
 
           {status && <p>{status}</p>}
