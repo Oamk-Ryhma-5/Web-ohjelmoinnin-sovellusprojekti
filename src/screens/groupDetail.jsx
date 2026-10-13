@@ -278,7 +278,7 @@ export default function GroupDetail() {
                 : null;
 
               const targetMovieId = movie.movie_id || movie.id;
-              const itemType = movie.type || 'movie';
+              const itemType = movie.type === 'tv' ? 'tv' : 'movie';
 
               return (
                 <div
