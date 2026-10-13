@@ -54,18 +54,17 @@ export async function getGenres(req, res, next) {
   }
 }
 
-// Hakee elokuvan tiedot id:n perusteella
 export async function getMovie(req, res, next) {
   try {
     const id = Number(req.params.id)
     const language = text(req.query.language, 5) || 'fi-FI'
+    const type = req.baseUrl.includes('/tv') || req.path.startsWith('/tv') ? 'tv' : (req.query.type || 'movie')
 
-    // Tarkistaa, että URL:sta saatu id on kelvollinen numero.
     if (!Number.isInteger(id) || id < 1) {
-      throw new ApiError('Virheellinen elokuvan tunniste.', 400, 'INVALID_MOVIE_ID')
+      throw new ApiError('Virheellinen tunniste.', 400, 'INVALID_ID')
     }
 
-    res.json(await selectMovie(id, language))
+    res.json(await selectMovie(id, language, type))
   } catch (error) {
     next(error)
   }
