@@ -138,7 +138,32 @@ groupRouter.delete('/:id/members/:userId', async (req, res, next) => {
 
 groupRouter.get('/:id/movies', async (req, res, next) => {
   const { id } = req.params
+  const userId = req.query.user_id || req.headers['x-user-id']
+
   try {
+    const groupResult = await pool.query('SELECT owner_id FROM groups WHERE id = $1', [id])
+    if (groupResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Group not found' })
+    }
+    const group = groupResult.rows[0]
+
+    const isOwner = userId && String(group.owner_id) === String(userId)
+
+    let isAccepted = false
+    if (userId) {
+      const memberCheck = await pool.query(
+        "SELECT 1 FROM group_members WHERE group_id = $1 AND user_id = $2 AND status = 'accepted'",
+        [id, userId]
+      )
+      if (memberCheck.rows.length > 0) {
+        isAccepted = true
+      }
+    }
+
+    if (!isOwner && !isAccepted) {
+      return res.status(403).json({ error: 'Vain ryhmän hyväksytyt jäsenet näkevät elokuvat.' })
+    }
+
     const result = await pool.query(
       'SELECT * FROM group_movies WHERE group_id = $1 ORDER BY added_at DESC',
       [id]

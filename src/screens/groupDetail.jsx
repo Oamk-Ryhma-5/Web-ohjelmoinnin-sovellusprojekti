@@ -39,19 +39,34 @@ export default function GroupDetail() {
     fetchMembers();
   }, [id]);
 
-  // Haetaan ryhmän elokuvat tietokannasta
+  const userMembership = members.find((m) => user && String(m.user_id) === String(user.id));
+  
+  // Onko käyttäjä ryhmän hyväksytty jäsen tai omistaja
+  const isAcceptedMember = user && (isOwner || (userMembership && userMembership.status === 'accepted'));
+
+  // Haetaan ryhmän elokuvat tietokannasta vain jos käyttäjä on hyväksytty jäsen tai omistaja
   useEffect(() => {
-    fetch(`/api/groups/${id}/movies`)
-      .then((res) => res.json())
+    if (!isAcceptedMember) {
+      setMovies([]);
+      setLoading(false);
+      return;
+    }
+
+    fetch(`/api/groups/${id}/movies?user_id=${user?.id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error('Ei oikeuksia');
+        return res.json();
+      })
       .then((data) => {
         setMovies(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch((err) => {
         console.error('Virhe elokuvien hakemisessa:', err);
+        setMovies([]);
         setLoading(false);
       });
-  }, [id]);
+  }, [id, isAcceptedMember, user]);
 
   // Lähetä liittymispyyntö ryhmään
   async function handleJoinRequest() {
@@ -149,11 +164,6 @@ export default function GroupDetail() {
   if (loading) {
     return <div className="container"><p>{texts?.loading || 'Ladataan…'}</p></div>;
   }
-
-  const userMembership = members.find((m) => user && String(m.user_id) === String(user.id));
-  
-  // Onko käyttäjä ryhmän hyväksytty jäsen tai omistaja
-  const isAcceptedMember = user && (isOwner || (userMembership && userMembership.status === 'accepted'));
 
   return (
     <div className="container" style={{ padding: '1rem' }}>
@@ -254,11 +264,15 @@ export default function GroupDetail() {
         )}
       </section>
 
-      {/* Ryhmän elokuvat ja julisteet (Näkyy kaikille) */}
+      {/* Ryhmän elokuvat ja julisteet - Näkyy vain hyväksytyille jäsenille */}
       <section className="group-movies-section" style={{ marginTop: '2rem' }}>
         <h2>{texts?.groupMovies || 'Ryhmän elokuvat 🎬'}</h2>
 
-        {movies.length === 0 ? (
+        {!user ? (
+          <p>{texts?.loginToViewMovies || 'Kirjaudu sisään nähdäksesi ryhmän elokuvat.'}</p>
+        ) : !isAcceptedMember ? (
+          <p>{texts?.groupOnlyForMembers || '🔒 Tämän ryhmän elokuvat ovat näkyvissä vain hyväksytyille jäsenille.'}</p>
+        ) : movies.length === 0 ? (
           <p>{texts?.noGroupMovies || 'Ryhmälle ei ole vielä lisätty elokuvia.'}</p>
         ) : (
           <div
