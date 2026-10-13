@@ -12,7 +12,7 @@ export default function Home() {
 
   function search(event) {
     event.preventDefault();
-    navigate(`/haku?q=${encodeURIComponent(query.trim())}&type=all`);
+    navigate(`/haku?q=${encodeURIComponent(query.trim())}`);
   }
 
   return (
@@ -45,3 +45,4 @@ export default function Home() {
     </div>
   );
 }
+```[cite: 2]
