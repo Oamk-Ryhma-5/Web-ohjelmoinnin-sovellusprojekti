@@ -13,7 +13,11 @@ export default function Search() {
 function SearchForm({ parameters }) {
   const [, setParameters] = useSearchParams()
   const { texts, language, locale } = useLanguage()
-  const [type, setType] = useState(parameters.get('type') === 'tv' ? 'tv' : 'movie')
+  
+  const paramType = parameters.get('type')
+  const initialType = paramType === 'tv' || paramType === 'all' ? paramType : 'movie'
+
+  const [type, setType] = useState(initialType)
   const [query, setQuery] = useState(parameters.get('q') || '')
   const [year, setYear] = useState(parameters.get('year') || '')
   const [genre, setGenre] = useState(parameters.get('genre') || '')
@@ -27,8 +31,9 @@ function SearchForm({ parameters }) {
       setGenres([])
       setError(null)
       try {
+        const genreType = type === 'all' ? 'movie' : type
         const response = await api.get('/api/genres', {
-          params: { type, language: locale },
+          params: { type: genreType, language: locale },
           signal: controller.signal,
         })
         if (!controller.signal.aborted) setGenres(response.data.genres)
@@ -45,7 +50,8 @@ function SearchForm({ parameters }) {
     setParameters({ type, q: query.trim(), year, genre })
   }
 
-  const submittedType = parameters.get('type') === 'tv' ? 'tv' : 'movie'
+  const submittedType = parameters.get('type') === 'tv' || parameters.get('type') === 'all' ? parameters.get('type') : 'movie'
+  
   const filters = new URLSearchParams({
     type: submittedType,
     query: parameters.get('q') || '',
@@ -71,6 +77,7 @@ function SearchForm({ parameters }) {
               setGenre('')
             }}
           >
+            <option value="all">{texts.allTypes || 'Kaikki (Elokuvat ja sarjat)'}</option>
             <option value="movie">{texts.movies}</option>
             <option value="tv">{texts.series}</option>
           </select>
