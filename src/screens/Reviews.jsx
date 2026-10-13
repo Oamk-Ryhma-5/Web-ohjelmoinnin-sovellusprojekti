@@ -95,10 +95,10 @@ export default function Reviews() {
                         <img 
                           src={group.posterUrl} 
                           alt={group.movieTitle} 
-                          className="review-poster-img"
+                          style={{ width: '50px', height: '75px', objectFit: 'cover', borderRadius: '4px' }}
                         />
                       ) : (
-                        <div className="review-poster-missing">
+                        <div style={{ width: '50px', height: '75px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', textAlign: 'center', borderRadius: '4px', background: 'rgba(0,0,0,0.1)' }}>
                           {texts.posterMissing}
                         </div>
                       )}
@@ -110,9 +110,6 @@ export default function Reviews() {
                           {group.movieTitle}
                         </Link>
                       </h3>
-                      <p className="review-count-text">
-                        Arvosteluja yhteensä: {group.reviews.length}
-                      </p>
                     </div>
                   </div>
 
