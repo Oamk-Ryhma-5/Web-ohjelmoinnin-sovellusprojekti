@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { auth } from '../middleware/auth.js'
 import { checkRequest } from '../middleware/checkRequest.js'
-import { addReview, getMovieReviews, getUserReview, getUserReviews, getAllReviews, updateReview, deleteReview } from '../models/reviewModel.js'
+import { addReview, getMovieReviews, getUserReview, updateReview, deleteReview, getAllReviews } from '../models/reviewModel.js'
 
 const router = Router()
 
@@ -11,7 +11,17 @@ const getAccountId = (req) => {
   return req.user?.id ?? req.user?.account_id ?? req.user?.accountId
 }
 
-// Hakee tietyn elokuvan kaikki arvostelut
+// Hakee kaikkien käyttäjien arvostelut
+router.get('/all', async (req, res, next) => {
+  try {
+    const reviews = await getAllReviews()
+    res.json(reviews)
+  } catch (err) {
+    next(err)
+  }
+})
+
+// Hakee tietyn elokuvan tai sarjan kaikki arvostelut
 router.get('/movie/:movieId', async (req, res, next) => {
   try {
     const { movieId } = req.params
@@ -30,35 +40,7 @@ router.get('/movie/:movieId', async (req, res, next) => {
   }
 })
 
-// UUSI: Hakee kaikkien käyttäjien arvostelut
-router.get('/all', async (req, res, next) => {
-  try {
-    const reviews = await getAllReviews()
-    res.json(reviews)
-  } catch (err) {
-    next(err)
-  }
-})
-
-// Hakee kirjautuneen käyttäjän kaikki arvostelut
-router.get('/mine', auth, async (req, res, next) => {
-  try {
-    const accountId = getAccountId(req)
-
-    if (!accountId) {
-      return res.status(401).json({
-        error: 'Käyttäjä-ID puuttuu'
-      })
-    }
-
-    const reviews = await getUserReviews(accountId)
-    res.json(reviews)
-  } catch (err) {
-    next(err)
-  }
-})
-
-// Hakee kirjautuneen käyttäjän oman arvostelun tietylle leffalle
+// Hakee kirjautuneen käyttäjän oman arvostelun
 router.get('/mine/:movieId', auth, async (req, res, next) => {
   try {
     const accountId = getAccountId(req)
@@ -96,7 +78,7 @@ router.post('/', auth, async (req, res, next) => {
       })
     }
 
-    const { movieId, movieTitle, stars, reviewText } = req.body
+    const { movieId, movieTitle, stars, reviewText, type } = req.body
 
     if (!movieId) {
       return res.status(400).json({
@@ -132,19 +114,21 @@ router.post('/', auth, async (req, res, next) => {
       })
     }
 
+    const mediaType = type === 'tv' ? 'tv' : 'movie'
     const newReview = await addReview(
       accountId,
       movieId,
       movieTitle,
       stars,
-      reviewText.trim()
+      reviewText.trim(),
+      mediaType
     )
 
     res.status(201).json(newReview)
   } catch (err) {
     if (err.code === '23505') {
       return res.status(409).json({
-        error: 'Olet jo arvostellut tämän elokuvan'
+        error: 'Olet jo arvostellut tämän kohteen'
       })
     }
 
@@ -164,7 +148,7 @@ router.put('/:movieId', auth, async (req, res, next) => {
     }
 
     const { movieId } = req.params
-    const { stars, reviewText } = req.body
+    const { stars, reviewText, type } = req.body
 
     if (!movieId || movieId === 'undefined') {
       return res.status(400).json({
@@ -194,11 +178,13 @@ router.put('/:movieId', auth, async (req, res, next) => {
       })
     }
 
+    const mediaType = type === 'tv' ? 'tv' : 'movie'
     const updatedReview = await updateReview(
       accountId,
       movieId,
       stars,
-      reviewText.trim()
+      reviewText.trim(),
+      mediaType
     )
 
     if (!updatedReview) {

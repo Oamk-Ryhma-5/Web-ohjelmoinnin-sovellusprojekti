@@ -66,7 +66,9 @@ export default function Reviews() {
         <section className="panel reviews-list-section" aria-labelledby="list-title">
           <div className="reviews-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {visibleReviews.map((review) => {
-              const detailPath = `/${review.itemType || 'movie'}/${review.movie_id}`
+              // Varmistetaan, että tyyppi ohjautuu oikeaan osoitteeseen (/tv/id tai /movie/id)
+              const mediaType = review.type === 'tv' ? 'tv' : 'movie'
+              const detailPath = `/${mediaType}/${review.movie_id}`
 
               return (
                 <article 
