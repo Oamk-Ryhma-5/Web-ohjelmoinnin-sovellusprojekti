@@ -95,10 +95,10 @@ export default function Reviews() {
                         <img 
                           src={group.posterUrl} 
                           alt={group.movieTitle} 
-                          style={{ width: '70px', height: '100px', objectFit: 'cover', borderRadius: '4px' }}
+                          className="review-poster-img"
                         />
                       ) : (
-                        <div style={{ width: '70px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', textAlign: 'center', borderRadius: '4px', background: 'rgba(0,0,0,0.1)' }}>
+                        <div className="review-poster-missing">
                           {texts.posterMissing}
                         </div>
                       )}
@@ -106,7 +106,7 @@ export default function Reviews() {
 
                     <div>
                       <h3 className="review-movie-title">
-                        <Link to={detailPath} className="review-title-link">
+                        <Link to={detailPath}>
                           {group.movieTitle}
                         </Link>
                       </h3>
