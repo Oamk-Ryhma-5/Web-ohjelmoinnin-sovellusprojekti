@@ -7,6 +7,23 @@ const router = Router()
 
 // Middlewaret: tarkistetaan pyynnön kelvollisuus ja käyttäjän tunnistautuminen
 router.use(checkRequest)
+
+// Julkinen suosikkilista
+router.get('/shared/:accountId', async (req, res, next) => {
+  try {
+    const { accountId } = req.params
+
+    if (!accountId) {
+      return res.status(400).json({ error: 'Käyttäjä-ID puuttuu' })
+    }
+
+    const favorites = await getUserFavorites(accountId)
+    res.json(favorites)
+  } catch (err) {
+    next(err)
+  }
+})
+
 router.use(auth)
 
 // Apufunktio käyttäjän ID:n hakemiseen tokenista/pyynnöstä

@@ -14,6 +14,7 @@ import About from './screens/About.jsx'
 import NotFound from './screens/NotFound.jsx'
 import MovieDetails from './screens/MovieDetails.jsx'
 import Favorites from './screens/favorites.jsx' // 1. Tuodaan Favorites-ruutu
+import SharedFavorites from './screens/SharedFavorites.jsx'
 
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import UserProvider from './context/UserProvider.jsx'
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: 'haku', element: <Search /> },
       { path: 'movie/:id', element: <MovieDetails /> },
+      { path: 'suosikit/shared/:accountId', element: <SharedFavorites /> },
       { path: 'kirjaudu', element: <Authentication key="login" mode="login" /> },
       { path: 'rekisteroidy', element: <Authentication key="register" mode="register" /> },
       { path: 'groups', element: <Groups /> },
