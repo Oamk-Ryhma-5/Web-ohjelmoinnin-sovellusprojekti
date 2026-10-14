@@ -35,12 +35,21 @@ export default function Favorites() {
   }
 
   const handleShare = async () => {
-    const shareUrl = `${window.location.origin}/suosikit/shared/${user.id}`
+    const userId = user?.id || user?.account_id || user?.userId
+    if (!userId) {
+      alert('Käyttäjätietoja ei löytynyt.')
+      return
+    }
 
-    await navigator.clipboard.writeText(shareUrl)
+    const shareUrl = `${window.location.origin}/suosikit/shared/${userId}`
 
-    alert('Linkki kopioitu!')
-}
+    try {
+      await navigator.clipboard.writeText(shareUrl)
+      alert('Linkki kopioitu!')
+    } catch (err) {
+      alert('Kopiointi epäonnistui')
+    }
+  }
 
   if (loading) return <div>{texts.loading}</div>
   if (error) return <div style={{ color: 'var(--error-text)' }}>{error}</div>
