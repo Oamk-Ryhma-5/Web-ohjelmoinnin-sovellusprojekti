@@ -15,7 +15,6 @@ import NotFound from './screens/NotFound.jsx'
 import MovieDetails from './screens/MovieDetails.jsx'
 import Favorites from './screens/favorites.jsx' // 1. Tuodaan Favorites-ruutu
 import SharedFavorites from './screens/SharedFavorites.jsx'
-import Favorites from './screens/favorites.jsx'
 
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import UserProvider from './context/UserProvider.jsx'
