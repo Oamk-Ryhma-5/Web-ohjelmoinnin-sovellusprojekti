@@ -567,6 +567,11 @@ input[readonly] {
   background: var(--surface);
 }
 
+.favorite-card h3 a {
+  text-decoration: none;
+  color: inherit;
+}
+
 .favorites-header {
   display: flex;
   align-items: center;
