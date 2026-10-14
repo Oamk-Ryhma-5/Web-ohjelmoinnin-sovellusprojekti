@@ -59,15 +59,16 @@ export async function selectGenres(type, language) {
   return data.genres.sort((a, b) => a.name.localeCompare(b.name, language))
 }
 
-export async function selectMovie(id, language) {
-  // Hakee elokuvan tiedot TMDB:stä id:n perusteella.
-  const data = await getFromTmdb(`/movie/${id}`, { language })
+export async function selectMovie(id, language, type = 'movie') {
+  const data = await getFromTmdb(`/${type}/${id}`, { language })
+  const title = type === 'tv' ? data.name : data.title
+  const releaseDate = type === 'tv' ? data.first_air_date : data.release_date
 
   return {
     id: data.id,
-    type: 'movie',
-    title: data.title || '',
-    year: data.release_date ? data.release_date.slice(0, 4) : '',
+    type,
+    title: title || '',
+    year: releaseDate ? releaseDate.slice(0, 4) : '',
     overview: data.overview || '',
     posterUrl: imageUrl(data.poster_path, 'w500'),
     backdropUrl: imageUrl(data.backdrop_path, 'w1280'),
@@ -80,7 +81,6 @@ export async function selectMovie(id, language) {
 }
 
 export async function selectNowPlaying(page, language) {
-  // FI tarkoittaa Suomen teatteriohjelmistoa, ei elokuvan tuotantomaata.
   const data = await getFromTmdb('/movie/now_playing', { region: 'FI', page, language })
   checkResults(data)
   return {
@@ -116,7 +116,6 @@ export async function selectMovies(filters) {
   let scannedPages = 0
   let data
 
-  // TMDB:n nimihaku ei suodata genreä. Tehdään se täällä ja luetaan tarvittaessa lisää sivuja.
   do {
     data = await getFromTmdb(path, { ...parameters, page })
     checkResults(data)

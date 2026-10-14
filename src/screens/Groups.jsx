@@ -6,7 +6,6 @@ import { useUser } from '../context/useUser.js';
 export default function Groups() {
   const { texts } = useLanguage();
   const { user } = useUser();
-  const [query, setQuery] = useState('');
   
   const [groups, setGroups] = useState([]);
   const [newGroupName, setNewGroupName] = useState('');
@@ -18,11 +17,6 @@ export default function Groups() {
       .then(data => setGroups(Array.isArray(data) ? data : []))
       .catch(err => console.error('Virhe ryhmien hakemisessa:', err));
   }, []);
-
-  function search(event) {
-    event.preventDefault();
-    navigate(`/haku?q=${encodeURIComponent(query.trim())}`);
-  }
 
   async function handleCreateGroup(event) {
     event.preventDefault();
@@ -68,45 +62,28 @@ export default function Groups() {
 
   return (
     <div className="container">
-      {/* Elokuva- ja sarjahaku */}
-      <section className="home-search" aria-labelledby="home-title">
-        <h1 id="home-title">{texts.homeTitle || 'Elokuvat ja sarjat'}</h1>
-        <form className="quick-search" onSubmit={search}>
-          <div className="quick-search-field">
-            <label htmlFor="quick-search">{texts.quickSearch || 'Hae nimellä'}</label>
-            <input
-              id="quick-search"
-              type="text"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder={texts.searchPlaceholder || 'Kirjoita elokuvan tai sarjan nimi'}
-            />
-          </div>
-        </form>
-      </section>
-
       {/* Ryhmien hallinta */}
-      <section className="groups-section" style={{ marginTop: '2rem', padding: '1rem' }}>
-        <h2>{texts.groups || 'Ryhmät'}</h2>
+      <section className="groups-section" style={{ marginTop: '1rem', padding: '1rem' }}>
+        <h2>{texts.groups}</h2>
 
         {user ? (
           <div className="logged-in-content">
             <form className="group-create-form" onSubmit={handleCreateGroup} style={{ marginBottom: '1rem' }}>
               <input
                 type="text"
-                placeholder={texts.newGroupNamePlaceholder || 'Uuden ryhmän nimi...'}
+                placeholder={texts.newGroupNamePlaceholder}
                 value={newGroupName}
                 onChange={(e) => setNewGroupName(e.target.value)}
                 style={{ marginRight: '0.5rem', padding: '0.4rem' }}
               />
-              <button className="button" type="submit">{texts.createGroup || 'Luo ryhmä'}</button>
+              <button className="button" type="submit">{texts.createGroup}</button>
             </form>
           </div>
         ) : (
-          <p>{texts.loginToCreateGroups || 'Kirjaudu sisään luodaksesi ryhmiä.'}</p>
+          <p>{texts.loginToCreateGroups}</p>
         )}
 
-        {/* Ryhmälista (Kaikki näkevät ryhmät) */}
+        {/* Ryhmälista */}
         <ul style={{ listStyle: 'none', padding: 0, marginTop: '1rem' }}>
           {groups.map(group => {
             const isOwner = user && String(user.id) === String(group.owner_id);
@@ -122,7 +99,7 @@ export default function Groups() {
                 </Link>
                 {isOwner && (
                   <button onClick={() => handleDeleteGroup(group.id)} style={{ background: 'var(--danger-background)', color: 'var(--danger-text)', border: 'none', padding: '0.3rem 0.6rem', cursor: 'pointer' }}>
-                    {texts.delete || 'Poista'}
+                    {texts.delete}
                   </button>
                 )}
               </li>

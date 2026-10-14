@@ -7,15 +7,20 @@ export default function MovieCard({ movie, genres }) {
     .filter((genre) => movie.genreIds.includes(genre.id))
     .map((genre) => genre.name)
 
+  // Tarkistetaan onko kyseessä sarja (tv)
+  const isTv = movie.type === 'tv' || movie.media_type === 'tv'
+  const detailPath = isTv ? `/tv/${movie.id}` : `/movie/${movie.id}`
+  const title = movie.title || movie.name
+
   return (
     <article className="movie-card">
-        <Link
-          className="poster-link"
-          to={`/movie/${movie.id}`}
-          aria-label={movie.title}
-        >
+      <Link
+        className="poster-link"
+        to={detailPath}
+        aria-label={title}
+      >
         {movie.posterUrl ? (
-          <img className="poster" src={movie.posterUrl} alt={movie.title} loading="lazy" />
+          <img className="poster" src={movie.posterUrl} alt={title} loading="lazy" />
         ) : (
           <div className="poster missing-poster">{texts.posterMissing}</div>
         )}
@@ -31,11 +36,11 @@ export default function MovieCard({ movie, genres }) {
       </Link>
       <div className="movie-info">
         <p className="movie-meta">
-          {movie.year} <span>·</span> {texts[movie.type]}
+          {movie.year} <span>·</span> {texts[movie.type] || (isTv ? texts.tv : texts.movie)}
         </p>
         <h3>
-          <Link to={`/movie/${movie.id}`}>
-            {movie.title || texts.titleMissing}
+          <Link to={detailPath}>
+            {title || texts.titleMissing}
           </Link>
         </h3>
         <p className="movie-genres">{genreNames.slice(0, 2).join(' · ')}</p>

@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { addReviewApi, fetchMyReview, updateReviewApi, deleteReviewApi } from '../api.js'
 import { useLanguage } from '../context/useLanguage.js'
 
 export default function ReviewForm({ movie, onSaved }) {
   const { texts } = useLanguage()
+  const { pathname } = useLocation()
   const [stars, setStars] = useState(3)
   const [text, setText] = useState('')
   const [preview, setPreview] = useState(null)
@@ -58,13 +60,17 @@ export default function ReviewForm({ movie, onSaved }) {
   // Tallentaa uuden arvostelun tai päivittää olemassa olevan
   async function saveReview() {
     try {
-      setStatus('Tallennetaan...')
+      setStatus(texts.loading || 'Tallennetaan...')
+
+      const mediaType = pathname.startsWith('/tv') ? 'tv' : 'movie'
+      const mediaTitle = movie.title || movie.name || ''
 
       if (existingReview) {
         // Käyttäjällä on jo arvostelu, joten päivitetään se
         const updatedReview = await updateReviewApi(movie.id, {
           stars,
           reviewText: text.trim(),
+          type: mediaType,
         })
 
         setExistingReview(updatedReview)
@@ -76,10 +82,11 @@ export default function ReviewForm({ movie, onSaved }) {
       } else {
         // Käyttäjällä ei vielä ole arvostelua, joten luodaan uusi
         const newReview = await addReviewApi({
-          movieId: movie.id,
-          movieTitle: movie.title,
+          movieId: String(movie.id),
+          movieTitle: mediaTitle,
           stars,
           reviewText: text.trim(),
+          type: mediaType,
         })
 
         setExistingReview(newReview)
@@ -126,7 +133,7 @@ export default function ReviewForm({ movie, onSaved }) {
   if (existingReview && !editing) {
     return (
       <section className="panel review-form">
-        <h2>Oma arvostelusi</h2>
+        <h2>{texts.ownReview || 'Oma arvostelusi'}</h2>
 
         <p className="review-preview-stars">
           <span aria-hidden="true">
@@ -140,7 +147,7 @@ export default function ReviewForm({ movie, onSaved }) {
           {existingReview.review_text}
         </p>
 
-        <div>
+        <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
           <button
             className="button"
             type="button"
@@ -149,7 +156,7 @@ export default function ReviewForm({ movie, onSaved }) {
               setStatus('')
             }}
           >
-            Muokkaa
+            {texts.edit || 'Muokkaa'}
           </button>
 
           <button
@@ -157,11 +164,11 @@ export default function ReviewForm({ movie, onSaved }) {
             type="button"
             onClick={deleteOwnReview}
           >
-            Poista arvostelu
+            {texts.delete || texts.deleteReview || 'Poista arvostelu'}
           </button>
         </div>
 
-        {status && <p>{status}</p>}
+        {status && <p style={{ marginTop: '12px' }}>{status}</p>}
       </section>
     )
   }
@@ -170,7 +177,7 @@ export default function ReviewForm({ movie, onSaved }) {
   return (
     <section className="panel review-form">
       <h2>
-        {existingReview ? 'Muokkaa arvostelua' : texts.writeReview}
+        {existingReview ? (texts.editReview || 'Muokkaa arvostelua') : texts.writeReview}
       </h2>
 
       <form onSubmit={showPreview}>
@@ -233,7 +240,7 @@ export default function ReviewForm({ movie, onSaved }) {
               setStatus('')
             }}
           >
-            Peruuta
+            {texts.cancel}
           </button>
         )}
       </form>
@@ -263,8 +270,8 @@ export default function ReviewForm({ movie, onSaved }) {
             onClick={saveReview}
           >
             {existingReview
-              ? 'Tallenna muutokset'
-              : 'Tallenna arvostelu'}
+              ? (texts.saveChanges || 'Tallenna muutokset')
+              : (texts.saveReview || 'Tallenna arvostelu')}
           </button>
 
           {status && <p>{status}</p>}

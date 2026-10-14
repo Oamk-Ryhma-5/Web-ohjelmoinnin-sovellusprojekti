@@ -1,38 +1,60 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { api } from '../api.js'
 import { useLanguage } from '../context/useLanguage.js'
 
 export default function Reviews() {
   const { locale, texts } = useLanguage()
   
-  const [reviewsList, setReviewsList] = useState([])
-  const [visibleCount, setVisibleCount] = useState(3)
+  const [groupedReviews, setGroupedReviews] = useState([])
   const [loading, setLoading] = useState(true)
 
+  // Haetaan kaikki arvostelut ja ryhmitellään ne elokuvan/sarjan ID:n mukaan
   useEffect(() => {
     async function loadAllReviews() {
       try {
         const response = await api.get('/api/reviews/all')
         const rawReviews = response.data
 
-        const enrichedReviews = await Promise.all(
-          rawReviews.map(async (review) => {
+        const groupsMap = {}
+
+        for (const review of rawReviews) {
+          const key = review.movie_id
+          if (!groupsMap[key]) {
+            const itemType = review.type === 'tv' ? 'tv' : 'movie'
+            groupsMap[key] = {
+              movieId: review.movie_id,
+              movieTitle: review.movie_title,
+              itemType,
+              posterUrl: '',
+              reviews: []
+            }
+          }
+          groupsMap[key].reviews.push(review)
+        }
+
+        const groupsArray = Object.values(groupsMap)
+
+        // Haetaan puuttuvat julisteet ja otsikot TMDB:stä / omasta API:sta
+        const enrichedGroups = await Promise.all(
+          groupsArray.map(async (group) => {
+            const endpoint = group.itemType === 'tv' ? `/api/tv/${group.movieId}` : `/api/movies/${group.movieId}`
             try {
-              const movieRes = await api.get(`/api/movies/${review.movie_id}`, {
+              const movieRes = await api.get(endpoint, {
                 params: { language: locale },
               })
               return {
-                ...review,
+                ...group,
                 posterUrl: movieRes.data.posterUrl || movieRes.data.poster_path || '',
-                movieTitle: movieRes.data.title || review.movie_title
+                movieTitle: movieRes.data.title || movieRes.data.name || group.movieTitle
               }
             } catch {
-              return { ...review, posterUrl: '', movieTitle: review.movie_title }
+              return group
             }
           })
         )
 
-        setReviewsList(enrichedReviews)
+        setGroupedReviews(enrichedGroups)
       } catch (err) {
         console.error('Kaikkien arvostelujen lataus epäonnistui:', err)
       } finally {
@@ -44,65 +66,76 @@ export default function Reviews() {
   }, [locale])
 
   if (loading) {
-    return <p>{texts.loading}</p>
+    return <p className="status-message">{texts.loading}</p>
   }
-
-  const visibleReviews = reviewsList.slice(0, visibleCount)
 
   return (
     <section className="reviews-page" aria-labelledby="reviews-title">
       <header className="page-heading">
         <h1 id="reviews-title">{texts.reviews}</h1>
+        <p>{texts.reviewsPageDescription || 'Katso muiden käyttäjien arvosteluja elokuvista ja sarjoista.'}</p>
       </header>
 
-      {reviewsList.length === 0 ? (
+      {groupedReviews.length === 0 ? (
         <p className="status-message">{texts.noComments || 'Ei vielä yhtään arvostelua.'}</p>
       ) : (
-        <section className="panel reviews-list-section" aria-labelledby="list-title">
-          <div className="reviews-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {visibleReviews.map((review) => (
-              <article 
-                key={review.id} 
-                className="review-card" 
-                style={{ display: 'flex', gap: '16px', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '16px' }}
-              >
-                {review.posterUrl ? (
-                  <img 
-                    src={review.posterUrl} 
-                    alt={review.movieTitle} 
-                    style={{ width: '80px', height: '120px', objectFit: 'cover', borderRadius: '4px' }} 
-                  />
-                ) : (
-                  <div style={{ width: '80px', height: '120px', background: '#ddd', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', textAlign: 'center', borderRadius: '4px' }}>
-                    {texts.posterMissing}
-                  </div>
-                )}
+        <div className="reviews-list-container">
+          {groupedReviews.map((group) => {
+            const detailPath = `/${group.itemType}/${group.movieId}`
 
-                <div style={{ flex: 1 }}>
-                  <h3 style={{ margin: '0 0 4px 0' }}>{review.movieTitle}</h3>
-                  <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#666' }}>
-                    {texts.owner ? 'Arvostellut:' : 'Reviewed by:'} <strong>{review.username || 'Tuntematon'}</strong>
-                  </p>
-                  <p className="review-card-stars" aria-hidden="true" style={{ margin: '0 0 8px 0' }}>
-                    {'★'.repeat(review.stars)}{'☆'.repeat(5 - review.stars)} ({review.stars}/5)
-                  </p>
-                  <p className="review-card-text" style={{ margin: '0 0 8px 0' }}>"{review.review_text}"</p>
-                  <small>{new Date(review.created_at).toLocaleDateString(locale)}</small>
+            return (
+              <article key={group.movieId} className="panel review-group-card">
+                {/* Elokuvan / Sarjan posteri */}
+                <Link to={detailPath} className="review-poster-link">
+                  {group.posterUrl ? (
+                    <img 
+                      src={group.posterUrl} 
+                      alt={group.movieTitle} 
+                      className="review-poster-img"
+                    />
+                  ) : (
+                    <div className="review-poster-missing">
+                      {texts.posterMissing || 'Ei julistetta'}
+                    </div>
+                  )}
+                </Link>
+
+                {/* Otsikko ja kyseisen kohteen arvostelut */}
+                <div style={{ minWidth: 0 }}>
+                  <h3 className="review-movie-title">
+                    <Link to={detailPath}>
+                      {group.movieTitle}
+                    </Link>
+                  </h3>
+
+                  <div className="reviews-sublist">
+                    {group.reviews.map((review) => (
+                      <div key={review.id} className="review-item-box">
+                        <div className="review-item-header">
+                          <span className="review-item-username">
+                            {review.username || 'Tuntematon'}
+                          </span>
+                          <div className="review-item-stars-wrapper">
+                            <span aria-hidden="true" className="review-item-stars">
+                              {'★'.repeat(review.stars)}{'☆'.repeat(5 - review.stars)}
+                            </span>
+                            <span className="muted" style={{ fontSize: '12px' }}>({review.stars}/5)</span>
+                          </div>
+                        </div>
+                        <p className="review-item-text">
+                          "{review.review_text}"
+                        </p>
+                        <small className="muted" style={{ fontSize: '12px' }}>
+                          {new Date(review.created_at).toLocaleDateString(locale)}
+                        </small>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </article>
-            ))}
-          </div>
-
-          {visibleCount < reviewsList.length && (
-            <button 
-              className="button secondary-button" 
-              onClick={() => setVisibleCount((prev) => prev + 3)}
-              style={{ marginTop: '20px' }}
-            >
-              {texts.more}
-            </button>
-          )}
-        </section>
+            )
+          })}
+        </div>
       )}
     </section>
   )

@@ -62,31 +62,36 @@ export default function Favorites() {
         <p>{texts.noFavorites}</p>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
-          {favorites.map((movie) => (
-            <div className="favorite-card" key={movie.id || movie.movie_id} style={{ border: '1px solid var(--border)', padding: '10px', borderRadius: '8px' }}>
-              {movie.poster_path ? (
-              <Link to={`/movie/${movie.movie_id}`}>  
-                <img 
-                  src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`} 
-                  alt={movie.movie_title || texts.titleMissing} 
-                  style={{ width: '100%', borderRadius: '4px' }}
-                />
-                </Link>
-              ) : (
-                <div style={{ height: '270px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--subtle)', borderRadius: '4px' }}>
-                  {texts.posterMissing}
-                </div>
-              )}
-              <h3>
-                <Link to={`/movie/${movie.movie_id}`}>
-                {movie.movie_title || texts.titleMissing}
-                </Link>
+          {favorites.map((movie) => {
+            const itemType = movie.type || 'movie'
+            const targetId = movie.movie_id
+
+            return (
+              <div className="favorite-card" key={targetId} style={{ border: '1px solid var(--border)', padding: '10px', borderRadius: '8px' }}>
+                {movie.poster_path ? (
+                  <Link to={`/${itemType}/${targetId}`}>  
+                    <img 
+                      src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`} 
+                      alt={movie.movie_title || texts.titleMissing} 
+                      style={{ width: '100%', borderRadius: '4px' }}
+                    />
+                  </Link>
+                ) : (
+                  <div style={{ height: '270px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--subtle)', borderRadius: '4px' }}>
+                    {texts.posterMissing}
+                  </div>
+                )}
+                <h3>
+                  <Link to={`/${itemType}/${targetId}`}>
+                    {movie.movie_title || texts.titleMissing}
+                  </Link>
                 </h3>
-              <button className="button secondary small" onClick={() => handleRemove(movie.movie_id)}>
-                {texts.removeFromFavorites}
-              </button>
-            </div>
-          ))}
+                <button className="button secondary small" onClick={() => handleRemove(targetId)}>
+                  {texts.removeFromFavorites}
+                </button>
+              </div>
+            )
+          })}
         </div>
       )}
     </div>

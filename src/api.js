@@ -27,12 +27,13 @@ export const fetchSharedFavorites = async (accountId) => {
 };
 
 // Lisää elokuva suosikkeihin
+// Lisää elokuva tai sarja suosikkeihin (välittää mukana myös tyypin)
 export const addFavoriteApi = async (movieData) => {
   const response = await api.post('/api/favorites', movieData);
   return response.data;
 };
 
-// Poista elokuva suosikeista
+// Poista elokuva tai sarja suosikeista
 export const removeFavoriteApi = async (movieId) => {
   const response = await api.delete(`/api/favorites/${movieId}`, {
     headers: {
@@ -42,7 +43,7 @@ export const removeFavoriteApi = async (movieId) => {
   return response.data;
 };
 
-// Hae tietyn elokuvan kaikki arvostelut
+// Hae tietyn elokuvan tai sarjan kaikki arvostelut
 export const fetchMovieReviews = async (movieId) => {
   const response = await api.get(`/api/reviews/movie/${movieId}`)
   return response.data
