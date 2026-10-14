@@ -567,6 +567,19 @@ input[readonly] {
   background: var(--surface);
 }
 
+.favorite-card h3 a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.favorites-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
 .movie-description {
   font-size: 1.1rem;
   line-height: 1.6;

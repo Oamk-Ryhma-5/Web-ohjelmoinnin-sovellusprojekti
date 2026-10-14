@@ -20,6 +20,13 @@ export const fetchFavorites = async () => {
   return response.data;
 };
 
+// Hae jaettu suosikkilista käyttäjän ID:n perusteella
+export const fetchSharedFavorites = async (accountId) => {
+  const response = await api.get(`/api/favorites/shared/${accountId}`);
+  return response.data;
+};
+
+// Lisää elokuva suosikkeihin
 // Lisää elokuva tai sarja suosikkeihin (välittää mukana myös tyypin)
 export const addFavoriteApi = async (movieData) => {
   const response = await api.post('/api/favorites', movieData);

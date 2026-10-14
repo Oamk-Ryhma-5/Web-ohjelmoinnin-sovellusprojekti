@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { fetchFavorites, removeFavoriteApi, errorMessage } from '../api'
 import { useLanguage } from '../context/useLanguage.js'
+import { useUser } from '../context/useUser.js'
 import { Link } from 'react-router-dom'
 
 export default function Favorites() {
+  const { user } = useUser()
   const [favorites, setFavorites] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -32,12 +34,29 @@ export default function Favorites() {
     }
   }
 
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/suosikit/shared/${user.id}`
+
+    await navigator.clipboard.writeText(shareUrl)
+
+    alert('Linkki kopioitu!')
+}
+
   if (loading) return <div>{texts.loading}</div>
   if (error) return <div style={{ color: 'var(--error-text)' }}>{error}</div>
 
   return (
     <div style={{ padding: '20px' }}>
-      <h2>{texts.favoritesTitle}</h2>
+      <div className="favorites-header">
+        <h2>{texts.favoritesTitle}</h2>
+
+        <button
+          className="button secondary small"
+          onClick={handleShare}
+        >
+          {texts.shareFavorites}
+      </button>
+    </div>
       
       {favorites.length === 0 ? (
         <p>{texts.noFavorites}</p>
