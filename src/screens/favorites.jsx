@@ -45,7 +45,7 @@ export default function Favorites() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
           {favorites.map((movie) => {
             const itemType = movie.type || 'movie'
-            const targetId = movie.id || movie.movie_id
+            const targetId = movie.movie_id
 
             return (
               <div className="favorite-card" key={targetId} style={{ border: '1px solid var(--border)', padding: '10px', borderRadius: '8px' }}>
